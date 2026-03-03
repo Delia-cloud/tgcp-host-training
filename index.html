@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Good Company Host Training</title>
+
+  <!-- React and ReactDOM from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for JSX transformation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // COLOUR CONSTANTS
+    const COLORS = {
+      orange: '#FF9E18',
+      slate: '#323E48',
+      cream: '#F9F3ED',
+      white: '#FFFFFF',
+    };
+
+    // ============ SVG ICON COMPONENTS ============
+    function ChevronDown({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      );
+    }
+
+    function ChevronUp({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+      );
+    }
+
+    function BookOpen({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+      );
+    }
+
+    function Lightbulb({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"></path>
+          <path d="M9 18h6"></path>
+          <path d="M10 22h4"></path>
+        </svg>
+      );
+    }
+
+    function Heart({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      );
+    }
+
+    function Menu({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      );
+    }
+
+    function X({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      );
+    }
+
+    function Check({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      );
+    }
+
+    function AlertCircle({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      );
+    }
+
+    function RefreshCw({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36M20.49 15a9 9 0 0 1-14.85 3.36"></path>
+        </svg>
+      );
+    }
+
+    function Mail({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+        </svg>
+      );
+    }
+
+    function Send({ size = 24 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      );
+    }
+
+    // QUIZ DATA - All 10 modules with MCQ format
+    const QUIZZES = {
+      1: [
+        {
+          q: "Margaret arrives looking tired. Which response best demonstrates 'being with'?",
+          options: [
+            "Let me get you a tea and find you a seat! (doing for)",
+            "Sit beside her calmly, match her energy, and ask 'How are you today?' (being with)",
+            "Direct her to the activity table right away",
+            "Tell the Lead Host she seems unwell"
+          ],
+          correct: 1,
+          explanation: "'Being with' means matching someone's energy and being present, not rushing to fix or manage."
+        },
+        {
+          q: "You notice two Members sitting alone at different tables. Which micro-skill would help?",
+          options: [
+            "Attunement",
+            "Prompting",
+            "Bridging (connecting people to each other)",
+            "Gentle Redirection"
+          ],
+          correct: 2,
+          explanation: "Bridging connects people to each other — finding common ground and making introductions."
+        },
+        {
+          q: "Which is a 'beautiful question'?",
+          options: [
+            "Do you remember what you had for breakfast?",
+            "What does this remind you of? (beautiful question)",
+            "Can you tell me your name?",
+            "Did you enjoy yesterday's activity?"
+          ],
+          correct: 1,
+          explanation: "Beautiful questions invite reflection without testing memory. 'What does this remind you of?' has no wrong answer."
+        },
+        {
+          q: "A carer arrives looking exhausted but says 'I'm fine.' What should you do?",
+          options: [
+            "Accept that and focus on the person they care for",
+            "Tell them they don't look fine",
+            "Notice their energy, gently invite them to sit down, and bridge them with other carers",
+            "Report your concern to the Concierge immediately"
+          ],
+          correct: 2,
+          explanation: "Carers need the same relational skills — attunement, gentle prompting, and bridging to peers."
+        }
+      ],
+      2: [
+        {
+          q: "Good Company describes itself as 'dementia-welcoming'. What does this mean?",
+          options: [
+            "Only people with dementia can attend",
+            "Everyone needs a dementia diagnosis to join",
+            "People with dementia are welcome alongside everyone else — no referral needed",
+            "Clubs are run by dementia specialists"
+          ],
+          correct: 2,
+          explanation: "Dementia-welcoming means the community welcomes people living with dementia alongside everyone else, without requiring a diagnosis or referral."
+        },
+        {
+          q: "Which of Kitwood's five psychological needs is about being part of a group?",
+          options: [
+            "Comfort",
+            "Attachment",
+            "Inclusion (belonging to a group)",
+            "Occupation"
+          ],
+          correct: 2,
+          explanation: "Inclusion is the need to belong, to be part of a group, and not to be left out or overlooked."
+        },
+        {
+          q: "Using the GEMS Model, how should you approach someone at the Amber stage?",
+          options: [
+            "Normal conversation, be subtle with support",
+            "Slow down, use shorter sentences, offer two choices",
+            "Go with their reality, don't correct, follow their lead",
+            "Focus on sensory connection — words matter less"
+          ],
+          correct: 2,
+          explanation: "Amber (moderate-advanced) means going with their reality. Don't correct or argue. Focus on feelings over facts."
+        },
+        {
+          q: "George was a bank manager for 35 years. At Club, people talk over him. What concept explains why this is harmful?",
+          options: [
+            "Safeguarding concern",
+            "Loss of role (when people lose their purpose and feel they no longer matter)",
+            "The GEMS Model",
+            "Dementia progression"
+          ],
+          correct: 1,
+          explanation: "Loss of role — when people lose their purpose and feel they no longer matter. Asking George's opinion restores his sense of value."
+        }
+      ],
+      3: [
+        {
+          q: "You ask Betty if she'd like tea or coffee. She doesn't respond. What should you do?",
+          options: [
+            "Ask again more loudly",
+            "Rephrase the question with more detail",
+            "Count to 10 silently, then simplify if needed (10-second rule)",
+            "Choose tea for her"
+          ],
+          correct: 2,
+          explanation: "The 10-second rule — give processing time. Rephrasing restarts the processing clock. Wait, then simplify."
+        },
+        {
+          q: "What is the correct order of the Positive Physical Approach (PPA)?",
+          options: [
+            "Greet, approach, touch, communicate",
+            "Front, low, slow, greeting, permission, connect then communicate",
+            "Low, slow, front, permission, greet, communicate",
+            "Slow, greet, approach, connect, permission, communicate"
+          ],
+          correct: 1,
+          explanation: "The six PPA steps in order: approach from the Front, get Low, get Slow, offer a Greeting gesture, wait for Permission, then Connect before communicating."
+        },
+        {
+          q: "Which environment signal says 'social gathering' rather than 'clinical setting'?",
+          options: [
+            "Rows of chairs facing front",
+            "Staff wearing lanyards",
+            "Real cups and tablecloths with flowers",
+            "Fluorescent lighting"
+          ],
+          correct: 2,
+          explanation: "Normal, not clinical — real cups, tablecloths, and flowers create a social atmosphere. Clinical signals like lanyards and rows of chairs feel institutional."
+        }
+      ],
+      4: [
+        {
+          q: "Brian answers every question before others can speak. What's the best approach?",
+          options: [
+            "Tell Brian to be quiet",
+            "Ignore Brian and only ask others",
+            "Value his contribution, then create space: 'Great point, Brian. Let's hear from Joan too.'",
+            "Move Brian to a different table"
+          ],
+          correct: 2,
+          explanation: "Value then redirect — acknowledge the contribution without dismissing them, then open the door for others."
+        },
+        {
+          q: "Maureen and Pat always sit together exclusively. A new Member, Jean, sits alone. What do you do?",
+          options: [
+            "Tell Maureen and Pat to include Jean",
+            "Move Jean to sit between them",
+            "Sit with Jean yourself, then bridge: 'Jean loves gardening — Maureen, didn't you have an allotment?'",
+            "Leave it — friendships are natural"
+          ],
+          correct: 2,
+          explanation: "Don't break friendships — bridge newcomers into existing groups by finding common ground. No one eats alone."
+        },
+        {
+          q: "What does 'Members are contributors, not beneficiaries' mean in practice?",
+          options: [
+            "Members should help clean up after Club",
+            "Members pay for their own activities",
+            "Ask about expertise, celebrate contributions, create space for stories",
+            "Members run the Club themselves"
+          ],
+          correct: 2,
+          explanation: "The Thursday Murder Club spirit — see Members as having expertise, stories, and value to give, not just things to receive."
+        }
+      ],
+      5: [
+        {
+          q: "Margaret is quieter than usual, declined her favourite biscuit, and sits with arms crossed. What's the best way to share this?",
+          options: [
+            "'Margaret seems depressed today'",
+            "'Margaret hasn't eaten, she's quiet, and she's pulling away from the group — I wanted to flag it'",
+            "'Something is definitely wrong with Margaret'",
+            "'I think Margaret needs to see a doctor'"
+          ],
+          correct: 1,
+          explanation: "Be specific and descriptive, not diagnostic. Describe what you observed across senses without jumping to conclusions."
+        },
+        {
+          q: "What is the 'sixth sense' in the observation framework?",
+          options: [
+            "Taste",
+            "Smell",
+            "Intuition (your gut feeling that something is right or off)",
+            "Balance"
+          ],
+          correct: 2,
+          explanation: "Intuition — your gut feeling that something is right or off. It's valid, important, and worth paying attention to."
+        },
+        {
+          q: "What's the correct order of the 4-step sensory walkthrough?",
+          options: [
+            "Touch → Sight → Hearing → Integration",
+            "Sight → Hearing → Touch & Intuition → Integration",
+            "Hearing → Sight → Smell → Integration",
+            "Intuition → Sight → Hearing → Touch"
+          ],
+          correct: 1,
+          explanation: "The 4-step walkthrough: Sight (look), Hearing (listen), Touch & Intuition (sense energy), Integration (put it together)."
+        }
+      ],
+      6: [
+        {
+          q: "Violet is sitting quietly, not responding to conversation. What sensory approach might help?",
+          options: [
+            "Talk more loudly to get her attention",
+            "Leave her alone — she wants privacy",
+            "Try hand cream with a pleasant scent, gentle hand massage, and calm presence",
+            "Move her to a busier part of the room"
+          ],
+          correct: 2,
+          explanation: "The Namaste Principle — if words don't reach someone, try sensory pathways: touch, smell, presence. Connection doesn't require conversation."
+        },
+        {
+          q: "Why is music from ages 15-25 often the most effective for people with dementia?",
+          options: [
+            "It's simpler music",
+            "The 'reminiscence bump' — memories from those years are most vivid and emotional",
+            "It's louder and easier to hear",
+            "It was better quality music"
+          ],
+          correct: 1,
+          explanation: "The reminiscence bump — memories from ages 15-25 are stored most deeply. Music from those years has the strongest emotional connection."
+        },
+        {
+          q: "What does 'If words fail, use touch. If touch isn't possible, use presence' mean?",
+          options: [
+            "Always try verbal communication first",
+            "There are multiple pathways to connection — keep trying different senses",
+            "Touch is better than talking",
+            "Presence means standing nearby"
+          ],
+          correct: 1,
+          explanation: "The Namaste Principle — connection has many pathways. When one is blocked, try another. Your calm, attentive presence IS connection."
+        }
+      ],
+      7: [
+        {
+          q: "A Member becomes agitated and says 'This is stupid! I don't want to do this!' What's your first response?",
+          options: [
+            "'Come on, give it a try — it's fun!'",
+            "'That's absolutely fine. You don't have to do this.'",
+            "'Calm down, it's just a game'",
+            "Alert the Lead Host immediately"
+          ],
+          correct: 1,
+          explanation: "Remove the pressure completely. Acknowledge their right to choose. Don't force, convince, or dismiss. Then offer an alternative calmly."
+        },
+        {
+          q: "Which phrase should you AVOID when someone is distressed?",
+          options: [
+            "'I'm here with you'",
+            "'You're safe here'",
+            "'Don't worry about it' (dismisses feelings)",
+            "'Take your time'"
+          ],
+          correct: 2,
+          explanation: "'Don't worry' dismisses feelings. All the others validate and reassure. Use presence and validation, not dismissal."
+        },
+        {
+          q: "Margaret keeps asking 'Where's my husband?' (who passed away). What should you do?",
+          options: [
+            "Tell her gently that he passed away",
+            "Acknowledge her feelings: 'You're thinking about your husband. Tell me about him.'",
+            "Distract her with an activity immediately",
+            "Ask the Lead Host to handle it"
+          ],
+          correct: 1,
+          explanation: "Don't cause fresh grief repeatedly. Acknowledge feelings, then gently redirect through connection. Enter her emotional reality with warmth."
+        },
+        {
+          q: "When should you escalate to the Lead Host?",
+          options: [
+            "Only during a medical emergency",
+            "When distress doesn't settle, there's a safety concern, or you feel out of your depth",
+            "Only when a Member asks you to",
+            "After every instance of distress"
+          ],
+          correct: 1,
+          explanation: "Escalate when things aren't settling, there's a safety concern, or you're unsure. Escalating early is good judgment, not weakness."
+        }
+      ],
+      8: [
+        {
+          q: "Frank's daughter says 'He can't garden any more.' But Frank's eyes light up when he talks about it. What's the Good Company approach?",
+          options: [
+            "Respect the daughter's wishes — she knows best",
+            "Ask 'How can we help Frank garden?' and adapt with potting trays and easy-grip tools",
+            "Tell Frank gardening is too dangerous",
+            "Refer Frank to occupational therapy"
+          ],
+          correct: 1,
+          explanation: "'Not 'I used to', but 'I still want to'' — the Good Company philosophy asks how we can make it possible, not whether it's safe enough."
+        },
+        {
+          q: "Harold has diabetes and reaches for a second slice of cake. What should you do?",
+          options: [
+            "Take the cake away",
+            "Tell him he can't have it because of his diabetes",
+            "Gently mention it's available, give him the choice: 'Would you like it now or save it for later?'",
+            "Pretend you didn't notice"
+          ],
+          correct: 2,
+          explanation: "Dignity of risk — Harold is an adult with the right to make choices. Inform gently, but the choice is his."
+        },
+        {
+          q: "Which is a safeguarding concern (not just low discomfort)?",
+          options: [
+            "A Member seems sad today",
+            "A Member mentions family tension",
+            "A Member says they're afraid to go home",
+            "A Member declines an activity"
+          ],
+          correct: 2,
+          explanation: "Being afraid to go home is a potential safeguarding concern. Sadness, family tension, and declining activities are normal low discomfort."
+        },
+        {
+          q: "'Mary seemed upset today and I think her son is stealing her money.' What's wrong with this recording?",
+          options: [
+            "Nothing — it captures the concern",
+            "It includes interpretation ('stealing') — should record Mary's exact words instead",
+            "It's too detailed",
+            "It should name the son"
+          ],
+          correct: 1,
+          explanation: "Record facts, not interpretations. Write what Mary actually said in quotes. 'Mary told me: \"My son keeps taking money from my purse.\"' Let others assess."
+        }
+      ],
+      9: [
+        {
+          q: "Margaret asks for your personal phone number because she gets lonely. What's the best response?",
+          options: [
+            "Give it — she's lonely and needs support",
+            "Refuse coldly: 'I can't do that'",
+            "Acknowledge warmly, explain the boundary, offer an alternative: 'I enjoy our chats too. The best way to stay connected is through Club, and the Concierge can help with loneliness support.'",
+            "Give a fake number"
+          ],
+          correct: 2,
+          explanation: "Hold boundaries with warmth: Acknowledge → Explain briefly → Offer alternative. This protects the relationship, not damages it."
+        },
+        {
+          q: "What's the key difference between a Host and a Lead Host?",
+          options: [
+            "Lead Hosts are paid, Hosts are volunteers",
+            "Lead Hosts run briefings, debriefs, safety checks, and are the escalation point",
+            "Lead Hosts do all the talking, Hosts observe",
+            "There's no real difference"
+          ],
+          correct: 1,
+          explanation: "Lead Hosts have additional coordination responsibilities: briefings, safety, room overview, debriefs, First Aid, Club Review. Both share the core purpose of creating good company."
+        },
+        {
+          q: "You realise a Member only wants to talk to you and follows you around Club. What should you do?",
+          options: [
+            "Enjoy the connection — it shows you're doing well",
+            "Gently widen their circle: introduce them to other Hosts and Members, explain you need to say hello to others",
+            "Avoid them next session",
+            "Tell the Lead Host to assign someone else"
+          ],
+          correct: 1,
+          explanation: "Exclusive relationships create dependency. Gently bridge them to others while maintaining warmth. Work with the team to ensure they build multiple connections."
+        }
+      ],
+      10: [
+        {
+          q: "During a briefing, you learn a new Member, Arthur, is joining. His profile says: retired engineer, loves cricket, early-stage dementia, wife Jean is his carer. What's your approach?",
+          options: [
+            "Treat Arthur like any other Member — no special treatment needed",
+            "Greet Arthur by name, seat him near someone who follows cricket, ask about engineering, and make sure Jean feels welcome as a Member too",
+            "Assign one Host to watch Arthur the entire session",
+            "Brief the whole group about Arthur's dementia"
+          ],
+          correct: 1,
+          explanation: "Use Discovery information to personalise: name, interests, conversation starters. Support the carer as a Member too. Don't single him out or breach confidentiality."
+        },
+        {
+          q: "The planned activity isn't working — nobody's engaging. What do you do?",
+          options: [
+            "Push through — the plan is the plan",
+            "Stop the activity and let people just sit quietly",
+            "Pivot — switch to conversation, try something simpler, or break into smaller groups",
+            "End the session early"
+          ],
+          correct: 2,
+          explanation: "Flexibility within structure. Connection is the goal, not completing the activity. Pivot to what works."
+        },
+        {
+          q: "Why is the post-Club debrief important?",
+          options: [
+            "It's required paperwork",
+            "It captures observations about Members (including carers), celebrates successes, flags concerns, and ensures continuity for the next team",
+            "It gives Hosts time to relax after the session",
+            "It's mainly for the Lead Host to give feedback"
+          ],
+          correct: 1,
+          explanation: "Debriefs are how observations travel from you to the wider team. What you notice today may be the only way next week's team knows something has changed."
+        }
+      ]
+    };
+
+    // MODULE DATA
+    const MODULES = [
+      {
+        id: 1,
+        title: 'Relational Foundations',
+        subtitle: 'What good company feels like in practice',
+        objectives: [
+          "Explain 'doing for' vs 'being with'",
+          'Apply four relational micro-skills',
+          'Use beautiful questions',
+          'Reflect on relational style'
+        ],
+        keyConcepts: [
+          {
+            title: 'Being vs Doing',
+            content: 'Task-focused vs Presence-focused. "Being fully present is more powerful than rushing to the next task."',
+            scenarios: [
+              'A member seems quiet. A task-focused approach might be to distract them with an activity. A being-with approach: sit beside them, ask "What\'s on your mind?" and listen.',
+              'Carer looks stressed. Task approach: help with logistics. Being-with approach: notice their energy, invite them to relax, sit with them.'
+            ]
+          },
+          {
+            title: 'Four Micro-Skills',
+            content: 'Attunement (reading emotional states), Prompting (gentle invitations), Bridging (connecting people), Gentle Redirection (guiding without controlling)',
+            scenarios: [
+              'Attunement: Notice someone looks anxious. Use your 6 senses to read what they need.',
+              'Prompting: Instead of "Join in the game", try "We\'re playing cards if you\'d like to watch or join."',
+              'Bridging: See two people standing alone. Introduce them: "John loves gardening too, Mary."',
+              'Gentle Redirection: Someone distressed. Redirect not to another task, but to calm presence first.'
+            ]
+          },
+          {
+            title: 'Beautiful Questions',
+            content: '"What do you notice?" instead of "What is this?", "What does this remind you of?" instead of "Do you remember?", "What\'s been on your mind?" instead of "What did you do yesterday?"',
+            scenarios: [
+              'Instead of testing memory: "What does that music remind you of?" opens conversation without shame.',
+              'Instead of "What did you do yesterday?" try "What\'s been on your mind?" - less pressure, more reflection.'
+            ]
+          },
+          {
+            title: 'Being With Carers',
+            content: 'Notice carer energy, invite them to relax, bridge them to other carers',
+            scenarios: [
+              'Carer arrives tense. Warm greeting, gentle: "You look like you could use a rest - we\'ll look after things, you go grab a tea."',
+              'New carer standing alone. Bridge them: "Sarah\'s husband comes too, I\'ll introduce you."'
+            ]
+          }
+        ],
+        takeaways: [
+          'Being present > being busy',
+          'Four micro-skills are core toolkit',
+          'Beautiful questions invite, don\'t test',
+          'Your energy affects the room',
+          'Carers need relational skills too'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Understanding Our Members',
+        subtitle: 'Who walks through the door and why it matters',
+        objectives: [
+          'Breadth of people served',
+          'Dementia-welcoming vs dementia-focused',
+          'Person still present',
+          '7 member needs',
+          'Kitwood\'s 5 needs',
+          'GEMS Model',
+          'Carer experience'
+        ],
+        keyConcepts: [
+          {
+            title: 'Four Types of Members',
+            content: 'Older adults experiencing loneliness, People living with dementia, Carers, People who feel something is changing',
+            scenarios: [
+              'An 82-year-old who lost their spouse 5 years ago comes for connection.',
+              'A 76-year-old living with dementia comes with their adult child.',
+              'A carer joins to get respite and support.',
+              'Someone\'s not sure what\'s happening to them but something feels different.'
+            ]
+          },
+          {
+            title: 'Dementia-Welcoming NOT Dementia-Focused',
+            content: 'Community not clinical, no referral needed, strengths-based. Everyone is welcome, no special "dementia club".',
+            scenarios: [
+              'Clinical approach: "Memory loss support group". Good Company approach: "Community lunch club for anyone who wants company."',
+              'Strengths-based: Notice someone good at storytelling, ask them to share their stories.'
+            ]
+          },
+          {
+            title: 'Seven Member Needs',
+            content: 'Self Care, Connection, Know How, Emotional, Social, Purpose, Wellbeing',
+            scenarios: [
+              'Self Care: Helps with reminders about health routines.',
+              'Connection: The chance to feel part of a community.',
+              'Know How: Learning practical skills or problem-solving together.',
+              'Emotional: Space to process feelings and be heard.',
+              'Social: Friendship and good times together.',
+              'Purpose: Feeling useful, valued, that you matter.',
+              'Wellbeing: Physical health, enjoyment, dignity.'
+            ]
+          },
+          {
+            title: 'Kitwood\'s 5 Needs',
+            content: 'Comfort, Attachment, Inclusion, Occupation, Identity',
+            scenarios: [
+              'Comfort: Warm cup of tea, comfortable seating, familiar faces.',
+              'Attachment: Safe relationships, knowing people care.',
+              'Inclusion: "You\'re part of this group, your presence matters."',
+              'Occupation: Having something meaningful to do or be part of.',
+              'Identity: Remembering who they are and what matters to them.'
+            ]
+          },
+          {
+            title: 'GEMS Model',
+            content: 'Sapphire (healthy), Diamond (early), Emerald (moderate), Amber (moderate-advanced), Ruby (advanced), Pearl (very advanced) - helps us adapt our approach.',
+            scenarios: [
+              'Sapphire: No noticeable dementia. Approach: normal conversation.',
+              'Diamond: Early changes, some memory issues. Approach: gentle reminders, clear communication.',
+              'Emerald: Moderate, memory loss is obvious. Approach: orientation helps, PPA steps, visual cues.',
+              'Amber: More significant changes, needs support with decisions. Approach: very clear, simple, much reassurance.',
+              'Ruby/Pearl: Advanced, communication very limited. Approach: sensory engagement, presence, intuition.'
+            ]
+          }
+        ],
+        takeaways: [
+          'Broad community served',
+          'Dementia-welcoming not focused',
+          'Carers are Members too',
+          'Connection is protection',
+          'Person still there at every stage',
+          'GEMS helps us adapt'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Dementia-Confident Hosting',
+        subtitle: 'Adapting your communication',
+        objectives: [
+          'Communication barriers',
+          'Normal not clinical environments',
+          'PPA 6 steps',
+          'Adapt communication',
+          'Environment effects'
+        ],
+        keyConcepts: [
+          {
+            title: 'Communication Barriers',
+            content: 'Speaking too fast, complex sentences, too many choices, cognitive overload',
+            scenarios: [
+              'Instead of: "Would you like tea, coffee, hot chocolate, juice, or water?" Try: "Can I get you a hot drink? Would tea be nice?"',
+              'Instead of: "We might play cards later, but first we\'re doing the quiz, and then there\'s the raffle..." Try: "Let\'s start with cards. You\'ll love this game."'
+            ]
+          },
+          {
+            title: '10-Second Rule',
+            content: 'After asking, count to 10 before saying anything else. Gives people processing time.',
+            scenarios: [
+              'You ask: "Would you like to join in?" Then you count: 1...2...3...4...5...6...7...8...9...10. They might answer at 7. Don\'t fill the silence.',
+              'Question asked. Silence feels long. Resist filling it. Person is thinking. Wait.'
+            ]
+          },
+          {
+            title: 'PPA 6 Steps',
+            content: 'Front, Low, Slow, Greeting, Permission, Connect then communicate',
+            scenarios: [
+              'Front: Approach from where they can see you, not from behind.',
+              'Low: Get to their eye level, sit down if needed.',
+              'Slow: Speak slowly, pause, no rush.',
+              'Greeting: "Hi Margaret, it\'s Claire." Familiar, warm.',
+              'Permission: "Can I sit with you?" or "Is it alright if we chat?"',
+              'Connect: Touch on arm, eye contact, then communicate. "The games are starting soon - fancy a go?"'
+            ]
+          }
+        ],
+        takeaways: [
+          'Slow down, 10-second rule',
+          'Simplify - one thing at a time',
+          'Normal not clinical',
+          'PPA steps',
+          'Approach from front',
+          'Adapt to GEMS',
+          'Your energy communicates'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Inclusion & Participation',
+        subtitle: 'Making sure everyone feels they belong',
+        objectives: [
+          'Thursday Murder Club spirit',
+          'Quieter + dominant members',
+          'Hobbies at own level',
+          'Read the room',
+          'Prevent cliques'
+        ],
+        keyConcepts: [
+          {
+            title: 'Members are Contributors, Not Beneficiaries',
+            content: 'They\'re not there to be helped - they\'re there to be part of the community. Their presence, ideas, and company matter.',
+            scenarios: [
+              'Don\'t: "Let\'s do this activity for them." Do: "What would make this fun for everyone?"',
+              'Person arrives. Treat as a valued guest who will contribute to the vibe, not someone to "manage."'
+            ]
+          },
+          {
+            title: 'Quieter Members',
+            content: 'Gentle invitations, sit beside, no pressure',
+            scenarios: [
+              'Quiet person standing. Don\'t say "Come join!" with everyone looking. Instead, sit near them, chat one-on-one, then: "A few of us are playing cards over there if you\'d like to watch or play."',
+              'They might need time to warm up. That\'s fine. Your quiet, patient presence says "you\'re welcome here."'
+            ]
+          },
+          {
+            title: 'Dominant Personalities',
+            content: 'Value then redirect. Acknowledge their contribution, then open space for others.',
+            scenarios: [
+              'Someone talks a lot: "That\'s a brilliant story, John - you\'ve got such a gift for storytelling. Let\'s hear what Margaret thinks too."',
+              'Not dismissing them, just gently creating space.'
+            ]
+          },
+          {
+            title: 'Preventing Cliques',
+            content: 'Mix seating, bridge newcomers, no one eats alone',
+            scenarios: [
+              'Notice two people always together? Next week: "Margaret, come sit with us this time - John can catch up with you at lunch."',
+              'New person arrives. Personally: "Come sit with me - I\'ll introduce you to everyone." Not left standing.',
+              'Lunch time. No one sitting alone. Host circulates: "Jim, come join us."'
+            ]
+          }
+        ],
+        takeaways: [
+          'Members are heroes of their stories',
+          'Gentle invitations for quiet, gentle boundaries for dominant',
+          'Watch for cliques',
+          'Carers are Members too',
+          'Reading room is a skill'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Six Senses Observation',
+        subtitle: 'Noticing what\'s going well and when something feels different',
+        objectives: [
+          'Six senses as tools',
+          'Positive vs change indicators',
+          'Sensory observation framework',
+          'Share with Concierge',
+          'Noticing is care'
+        ],
+        keyConcepts: [
+          {
+            title: 'Noticing is Care, Not Surveillance',
+            content: 'You\'re not watching to catch people out - you\'re observing because you care.',
+            scenarios: [
+              'Surveillance: "I\'m watching to see what they\'re doing." Care: "I notice Margaret\'s quieter today - everything OK?"'
+            ]
+          },
+          {
+            title: 'Six Senses Framework',
+            content: 'Sight, Hearing, Smell & Taste, Touch & Movement, Intuition, Integration',
+            scenarios: [
+              'Positive: Person laughing, leaning in, animated hands.',
+              'Change: Someone looks flushed, or moves carefully like something hurts, or sits with arms folded looking away.'
+            ]
+          }
+        ],
+        takeaways: [
+          'Noticing is care',
+          'Six senses are toolkit',
+          'Notice good AND different',
+          'Trust intuition',
+          'Share with care not diagnosis',
+          'Positive observations matter too'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Sensory Engagement',
+        subtitle: 'Connection when words aren\'t enough',
+        objectives: [
+          'Namaste Principle',
+          'Five senses as pathways',
+          'Music power',
+          'Family preferences',
+          'Sensory-rich experiences'
+        ],
+        keyConcepts: [
+          {
+            title: 'Namaste Principle',
+            content: 'Meaningful connection is possible at every stage of life and ability. The person is always there, even if they can\'t use words.',
+            scenarios: [
+              'Someone with very advanced dementia who doesn\'t speak. They can still feel your warmth, respond to your presence, connect through touch and music.'
+            ]
+          },
+          {
+            title: 'If Words Fail...',
+            content: '"If words fail, use touch. If touch isn\'t possible, use presence." There\'s always a way to connect.',
+            scenarios: [
+              'Person doesn\'t understand language. Hold their hand, use gentle eye contact, sit quietly with them.',
+              'Someone doesn\'t want to be touched. Your calm, warm presence at their side still conveys: you\'re not alone.'
+            ]
+          },
+          {
+            title: 'Sensory Pathways',
+            content: 'Touch, Smell, Sight, Hearing, Taste - multiple ways to connect',
+            scenarios: [
+              'Hold their hand while listening to their favourite music.',
+              'Pass around soft fabrics and see who engages - silk, wool, cotton.'
+            ]
+          }
+        ],
+        takeaways: [
+          'Namaste: person is always there',
+          'Multiple pathways to connection',
+          'Music carries memory',
+          'Touch conveys care',
+          'Presence is enough',
+          'Sensory is powerful when words fade'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Handling Discomfort & Distress',
+        subtitle: 'When things feel hard',
+        objectives: [
+          'Recognize distress signs',
+          'De-escalation approach',
+          'Comfort in the moment',
+          'Escalation to Lead Host',
+          'Self-care for Hosts'
+        ],
+        keyConcepts: [
+          {
+            title: 'Distress vs Mild Discomfort',
+            content: 'Distress: agitation, tears, withdrawal, saying they want to leave. Discomfort: slight shyness, quiet mood, hesitation.',
+            scenarios: [
+              'Mild discomfort: "You might like to sit over here." Distress: "I want to go home RIGHT NOW." Different responses needed.'
+            ]
+          },
+          {
+            title: 'Remove Pressure First',
+            content: 'Whatever\'s happening, remove the situation causing distress before trying anything else.',
+            scenarios: [
+              'Person agitated during an activity? Stop the activity immediately. Don\'t try to convince them to continue.',
+              'Someone uncomfortable with a particular person? Gently: "Come chat with me for a bit."'
+            ]
+          },
+          {
+            title: 'Validation vs Problem-Solving',
+            content: 'Validate feelings first. Don\'t try to fix or convince.',
+            scenarios: [
+              'Don\'t: "You\'re fine, don\'t worry." Do: "I can see you\'re upset. I\'m here with you. Let\'s sit down."',
+              'Validate the feeling, not necessarily the belief. If someone says they\'re afraid: "You\'re scared, and I\'m here. You\'re safe."'
+            ]
+          }
+        ],
+        takeaways: [
+          'Distress is valid',
+          'Remove pressure, don\'t push through',
+          'Validate feelings',
+          'Go with their reality',
+          'Escalate early and often',
+          'Host wellbeing matters',
+          'You did your best'
+        ]
+      },
+      {
+        id: 8,
+        title: 'Safety & Autonomy',
+        subtitle: 'Protecting dignity and managing risk',
+        objectives: [
+          'Autonomy and dignity',
+          'Risk vs safety',
+          'Safeguarding concerns',
+          'Recording observations',
+          'When to involve others'
+        ],
+        keyConcepts: [
+          {
+            title: 'Dignity of Risk',
+            content: '"Not I used to, but I still want to." People have the right to take risks and live as fully as possible.',
+            scenarios: [
+              'George used to climb a ladder. Now he\'s wobbly, but he still wants to clean gutters. Can we help safely? Find a way. Don\'t ban him.',
+              'Harold wants to paint. His hands shake. Expect paint on the floor. The joy is worth it.'
+            ]
+          },
+          {
+            title: 'Autonomy and Adaptation',
+            content: 'The approach: "How can we help them do what they want?" not "Is it safe enough?"',
+            scenarios: [
+              '"How can we help Frank garden?" → potting trays, easy-grip tools, sitting gardening.',
+              '"How can we help Diane cook?" → pre-prepped ingredients, lower work surface, we assist don\'t take over.'
+            ]
+          },
+          {
+            title: 'Safeguarding Concerns',
+            content: 'Different from normal discomfort: abuse, neglect, exploitation, abandonment, self-harm',
+            scenarios: [
+              'Discomfort: "I don\'t want to come today." Safeguarding: "My family is mean to me and I\'m afraid at home."',
+              'Discomfort: sad mood. Safeguarding: bruising with no explanation, fearfulness, weight loss, financial concerns.'
+            ]
+          }
+        ],
+        takeaways: [
+          'Autonomy > over-protection',
+          'Adapt, don\'t ban',
+          'Risk is part of living',
+          'Safeguarding is serious',
+          'Record facts, not opinions',
+          'Share concerns, don\'t assume',
+          'Lead Host is your support'
+        ]
+      },
+      {
+        id: 9,
+        title: 'Boundaries & Role Clarity',
+        subtitle: 'Professional relationships that work',
+        objectives: [
+          'Host role and limits',
+          'Lead Host responsibilities',
+          'Warm professional boundaries',
+          'Dependency prevention',
+          'Team working'
+        ],
+        keyConcepts: [
+          {
+            title: 'Host Role Boundaries',
+            content: 'You create good company. You don\'t provide therapy, medical care, or solve personal problems.',
+            scenarios: [
+              'Member: "I\'m so depressed." You: "I hear you. That sounds really hard. Have you talked to your GP?" Not: trying to cheer them up or solve it.',
+              'Member: "Can you help me with my finances?" You: "That\'s a bit beyond what I can do, but the Concierge might be able to point you to support."'
+            ]
+          },
+          {
+            title: 'Warm Boundaries',
+            content: 'You can be kind and caring while holding clear limits',
+            scenarios: [
+              'Member asks for your phone: "I really enjoy our chats. The best way we can stay connected is through Club. And the Concierge can help with loneliness support between sessions."',
+              'Member: "Come visit me at home." You: "I care about you. I can\'t visit homes, but I\'m excited to see you next week here."'
+            ]
+          },
+          {
+            title: 'Lead Host Role',
+            content: 'Lead Hosts do: briefings, safety overview, debriefs, escalation, pastoral care coordination, First Aid, Club Review',
+            scenarios: [
+              'As a Host, you note concerns during Club. Lead Host follows up, investigates, involves appropriate people.',
+              'You feel overwhelmed. Lead Host is there to support you too.'
+            ]
+          },
+          {
+            title: 'Preventing Dependency',
+            content: 'Watch for exclusive relationships. Gently widen their circle.',
+            scenarios: [
+              'Notice a Member only talks to you, follows you around? That\'s not health. Introduce them: "I want you to meet David - he\'s amazing." Then circulate.',
+              'Over time: help them make other connections. This is love, not rejection.'
+            ]
+          }
+        ],
+        takeaways: [
+          'You create company, not therapy',
+          'Boundaries are kind',
+          'Lead Host is the escalation point',
+          'Watch for dependency',
+          'Team support is essential',
+          'Your role has limits - that\'s OK',
+          'Professional doesn\'t mean cold'
+        ]
+      },
+      {
+        id: 10,
+        title: 'Running a Club',
+        subtitle: 'Bringing it all together',
+        objectives: [
+          'Briefing and preparation',
+          'Throughout the session',
+          'Reading and responding',
+          'Flexibility within structure',
+          'Debrief and continuity'
+        ],
+        keyConcepts: [
+          {
+            title: 'The Briefing',
+            content: 'You learn: who\'s coming, any changes, notes from last session, what activities are planned',
+            scenarios: [
+              'New Member Arthur is coming - he\'s a retired engineer, loves cricket, has early dementia. His wife Jean is his carer.',
+              'Notice: you can warm-greet Arthur by name, seat him by someone who follows cricket, ask about his engineering. Make Jean feel like a Member too.'
+            ]
+          },
+          {
+            title: 'Arrival & Settling',
+            content: 'First few minutes set the tone. Personal greetings, warm, name-use, bridging',
+            scenarios: [
+              'Margaret arrives: "Margaret! It\'s so good to see you. Come sit with us."',
+              'New person: personally guide them. "Come with me, I\'ll introduce you." Not left to figure it out.'
+            ]
+          },
+          {
+            title: 'Throughout the Session',
+            content: 'Circulate, observe, notice, support, adjust',
+            scenarios: [
+              'Watch the energy. If it dips, switch things up.',
+              'Notice individuals: who\'s engaged, who needs a gentle invite, who might need a quiet check-in.',
+              'Be flexible. If an activity isn\'t working, pivot.'
+            ]
+          },
+          {
+            title: 'Flexibility Within Structure',
+            content: 'You have a plan, but the plan serves connection - not the other way around',
+            scenarios: [
+              'Planned quiz - nobody\'s interested. Switch to conversation about their lives instead.',
+              'Planned card game - one person wants to paint. Perfect. Some paint, others play cards.'
+            ]
+          },
+          {
+            title: 'The Debrief',
+            content: 'Last 15 minutes: what did you notice? What needs following up? Celebrate wins.',
+            scenarios: [
+              'You noticed Margaret was quiet today. Share it. Next week\'s team should know.',
+              '"John was animated today - told a brilliant story about his Navy days." Share the joy.',
+              'Note concerns, celebrate successes, ensure continuity.'
+            ]
+          }
+        ],
+        takeaways: [
+          'Preparation matters',
+          'Personal greetings',
+          'Circulate and observe',
+          'Connection over plan',
+          'Debrief is crucial',
+          'Your energy shapes the space',
+          'You\'re doing something really important'
+        ]
+      }
+    ];
+
+    // BRANCHING SCENARIOS - One per module
+    const SCENARIOS = {
+      1: {
+        title: 'The Quiet Arrival',
+        situation: 'Margaret arrives at Club looking tired and withdrawn. She usually greets everyone warmly, but today she sits down without a word, staring at the table. Other Members are chatting happily around her.',
+        choices: [
+          {
+            label: 'Bring her a tea and suggest she joins the card game',
+            outcome: 'Margaret takes the tea but doesn\'t touch it. She looks overwhelmed by the noise at the card table and retreats further into herself. You meant well, but you jumped to "doing for" rather than "being with."',
+            quality: 'less-ideal',
+            reflection: 'When someone is low, activity can feel like pressure. The instinct to fix is natural — but presence is more powerful than a task.'
+          },
+          {
+            label: 'Sit beside her quietly, match her energy, and after a moment say: "It\'s good to see you, Margaret"',
+            outcome: 'Margaret looks at you and her shoulders soften slightly. After a pause, she says: "I didn\'t sleep well. I just needed to be somewhere safe." She stays quiet, but she\'s no longer alone. By the end of the session, she\'s smiling gently at the conversation beside her.',
+            quality: 'best',
+            reflection: 'This is "being with" — matching energy, offering presence, no agenda. You used attunement to read her state and responded with calm connection.'
+          },
+          {
+            label: 'Tell the Lead Host that Margaret seems unwell and ask them to check on her',
+            outcome: 'The Lead Host approaches Margaret, who feels singled out and says "I\'m fine" defensively. She feels watched rather than cared for. Escalating was premature — this was a moment for gentle connection, not concern.',
+            quality: 'less-ideal',
+            reflection: 'Escalation is important when there\'s genuine concern, but a quiet mood isn\'t distress. Your own calm presence as a Host is the first and best response.'
+          }
+        ]
+      },
+      2: {
+        title: 'The New Face',
+        situation: 'Arthur, 74, arrives at Club for the first time with his daughter. He was recently diagnosed with early-stage dementia. His daughter whispers to you: "He doesn\'t want people to know about his diagnosis. He\'s nervous." Arthur stands near the door, looking uncertain.',
+        choices: [
+          {
+            label: 'Walk over and say: "Welcome to our memory support group! We\'ll take good care of you"',
+            outcome: 'Arthur stiffens. He whispers to his daughter: "I told you — I don\'t want a support group." They leave before lunch. The label made him feel like a patient, not a person.',
+            quality: 'less-ideal',
+            reflection: 'Good Company is dementia-welcoming, not dementia-focused. Labels and clinical language can push people away. Arthur came for connection, not support.'
+          },
+          {
+            label: 'Greet him warmly by name, ask what he enjoys, and introduce him to someone with a shared interest',
+            outcome: 'Arthur relaxes when you ask about his hobbies. "I was an engineer," he says. You introduce him to Frank, who used to build model railways. By lunchtime, Arthur and Frank are deep in conversation. His daughter is sitting with other carers, looking relieved.',
+            quality: 'best',
+            reflection: 'You saw Arthur as a person with interests, not a diagnosis. Bridging him to Frank met his need for connection and purpose. His daughter found community too — carers are Members.'
+          },
+          {
+            label: 'Give Arthur a welcome pack and explain how the Club works, the activities, and the schedule',
+            outcome: 'Arthur listens politely but looks overwhelmed. Too much information at once. He sits down but doesn\'t talk to anyone for the first hour. The cognitive load of processing everything leaves no room for connection.',
+            quality: 'less-ideal',
+            reflection: 'Information overload is a barrier, especially for someone with early dementia. One thing at a time. Connection first, logistics later.'
+          }
+        ]
+      },
+      3: {
+        title: 'The Lunch Queue',
+        situation: 'It\'s lunchtime at Club. Dorothy, who has moderate dementia, is standing at the food table looking confused. There are several dishes to choose from, and other Members are waiting behind her. She looks flustered and says: "I don\'t know... I don\'t know what to..."',
+        choices: [
+          {
+            label: 'List all the options clearly: "There\'s shepherd\'s pie, chicken casserole, fish and chips, or a salad"',
+            outcome: 'Dorothy freezes. Four choices is too many. She looks more distressed. The person behind her sighs, which makes it worse. Dorothy says "I\'ll just have nothing" and walks away embarrassed.',
+            quality: 'less-ideal',
+            reflection: 'Too many choices creates cognitive overload. At the Emerald stage, simplify. One or two clear options is enough.'
+          },
+          {
+            label: 'Step beside her, smile, and say gently: "The shepherd\'s pie smells lovely today. Shall I get you some?"',
+            outcome: 'Dorothy\'s face lights up. "Oh yes, that would be lovely." She relaxes immediately. You guide her to a seat and bring her plate. She starts chatting happily to the person beside her. A moment of potential distress became a moment of warmth.',
+            quality: 'best',
+            reflection: 'You used the PPA approach — front, low, slow — and simplified the decision to one clear option. This preserved her dignity while removing the pressure.'
+          },
+          {
+            label: 'Ask the person behind Dorothy to go first while you help Dorothy decide',
+            outcome: 'Dorothy notices people going ahead of her and feels like she\'s holding everyone up. She says quietly: "Don\'t worry about me." The help felt more like being managed than being cared for.',
+            quality: 'less-ideal',
+            reflection: 'Drawing attention to the queue put the focus on the problem rather than on Dorothy. Gentle, quiet support keeps dignity intact.'
+          }
+        ]
+      },
+      4: {
+        title: 'The Dominant Voice',
+        situation: 'During a group conversation, Brian is telling another long story. He\'s been talking for ten minutes. Three quieter Members haven\'t spoken at all, and you notice one of them, Sylvia, has started looking at the floor. Brian is lovely, but he fills every silence.',
+        choices: [
+          {
+            label: 'Wait for Brian to finish — it would be rude to interrupt him',
+            outcome: 'Brian talks for another fifteen minutes. Sylvia puts on her coat. Another quiet Member moves to a different table alone. Brian is happy, but three people have been excluded. The room feels like Brian\'s space, not everyone\'s.',
+            quality: 'less-ideal',
+            reflection: 'Inclusion means creating space for everyone. Waiting indefinitely means the quieter voices never get heard. A Host gently manages the dynamics.'
+          },
+          {
+            label: 'Wait for a natural breath, then say: "That\'s a wonderful story, Brian. Sylvia, what do you think — does that remind you of anything?"',
+            outcome: 'Brian beams at the compliment. Sylvia looks up, surprised to be invited in. "Well," she says, "my father used to say something like that..." and shares a beautiful memory. Brian listens, genuinely interested. The conversation becomes shared, not dominated.',
+            quality: 'best',
+            reflection: 'You valued Brian\'s contribution while creating space for Sylvia. This is the "value then redirect" technique — acknowledge, then bridge to someone else. No one feels dismissed.'
+          },
+          {
+            label: 'Say: "Brian, let\'s give the others a chance to speak now"',
+            outcome: 'Brian looks hurt. "Sorry, I didn\'t realise I was going on," he says, and goes quiet for the rest of the session. He doesn\'t come back the following week. The correction felt like a public telling-off.',
+            quality: 'less-ideal',
+            reflection: 'Direct correction in front of others can feel shaming. Valuing someone\'s contribution before redirecting protects their dignity. Members are contributors, not problems to manage.'
+          }
+        ]
+      },
+      5: {
+        title: 'Something Feels Different',
+        situation: 'You\'ve been greeting Harold every week for three months. He\'s usually cheerful, smartly dressed, and loves his tea with two sugars. Today he arrives in yesterday\'s clothes, hasn\'t shaved, and when you offer tea he says: "Whatever." He sits alone. You can\'t put your finger on it, but something feels off.',
+        choices: [
+          {
+            label: 'Make a note to mention it at debrief — he might just be having an off day',
+            outcome: 'At debrief you mention it, but by then the details are hazy. Next week Harold doesn\'t come. The week after, his daughter calls to say he\'d had a fall at home and wasn\'t eating. The signs were there — but waiting diluted the observation.',
+            quality: 'less-ideal',
+            reflection: 'Your intuition was right. Waiting until debrief meant the observation lost urgency and specificity. Trust your sixth sense — act on it gently while the moment is live.'
+          },
+          {
+            label: 'Sit with Harold, check in gently, then share specific observations with the Lead Host: "Harold\'s in yesterday\'s clothes, unshaved, refused tea, sitting alone — something feels different"',
+            outcome: 'The Lead Host speaks to Harold discreetly, who admits he\'s been struggling at home since his wife went into hospital. The Concierge arranges a check-in call. Harold feels seen, not watched. Your specific, factual observations gave the team something concrete to act on.',
+            quality: 'best',
+            reflection: 'You used all six senses: sight (clothes, grooming), hearing (flat response), intuition (something feels off). You described facts, not diagnoses. And you trusted your gut — that\'s exactly what the training teaches.'
+          },
+          {
+            label: 'Ask Harold directly: "Are you feeling alright? You don\'t look yourself today"',
+            outcome: 'Harold bristles: "I\'m fine. Why, what\'s wrong with me?" He feels scrutinised. He spends the rest of the session avoiding you. The concern was valid, but the approach — commenting on his appearance — felt like judgement.',
+            quality: 'less-ideal',
+            reflection: 'Noticing is care, not surveillance. "You don\'t look yourself" can feel like being assessed. A gentler check-in — "How are things?" while sitting beside him — opens the door without putting him on the spot.'
+          }
+        ]
+      },
+      6: {
+        title: 'Beyond Words',
+        situation: 'Elsie has advanced dementia and hasn\'t spoken in weeks. She sits in her chair, eyes often closed. Her family say she "isn\'t really there anymore." Today during Club, the room is noisy and Elsie seems agitated — rocking slightly, gripping the armrest. Other Hosts are busy with activities.',
+        choices: [
+          {
+            label: 'She seems settled enough — focus on the Members who are more engaged',
+            outcome: 'Elsie\'s agitation increases. She starts making distressed sounds. By the time someone notices, she\'s deeply upset and her carer has to take her home early. She missed the chance for connection because the assumption was that she couldn\'t benefit from it.',
+            quality: 'less-ideal',
+            reflection: 'The Namaste Principle says meaningful connection is possible at every stage. Elsie was communicating — through her body — that she needed something. Less verbal doesn\'t mean less present.'
+          },
+          {
+            label: 'Move to a quieter corner with Elsie, hold her hand gently, and hum a song from her era softly',
+            outcome: 'As you hum, Elsie\'s grip on the armrest loosens. Her rocking slows. She opens her eyes and looks at you. After a few minutes, she squeezes your hand. Her carer later says: "She was calmer today than she\'s been in weeks." Connection happened — without a single word.',
+            quality: 'best',
+            reflection: 'When words aren\'t enough, touch and music become the pathway. You used sensory engagement — reducing noise, adding gentle touch and familiar melody. The person is always there.'
+          },
+          {
+            label: 'Ask her carer what usually calms her down',
+            outcome: 'The carer shrugs: "Nothing really helps anymore." You\'re stuck, and Elsie is still agitated. Relying only on the carer\'s knowledge missed what you could observe and try in the moment — families can sometimes lose hope, but Hosts can offer fresh connection.',
+            quality: 'less-ideal',
+            reflection: 'Family input is valuable, but they\'re also grieving. Sometimes a Host who tries something new — touch, music, presence — can reach someone in ways the family thought weren\'t possible anymore.'
+          }
+        ]
+      },
+      7: {
+        title: 'The Storm',
+        situation: 'During a group activity, Gerald suddenly pushes his chair back and shouts: "I want to go HOME! You\'re keeping me here!" His face is red, his fists are clenched. Other Members look startled. His carer looks embarrassed and says: "Gerald, stop it, you\'re being silly."',
+        choices: [
+          {
+            label: 'Try to reassure him: "Gerald, you\'re fine! We\'re all having a nice time. Sit back down"',
+            outcome: 'Gerald gets louder: "I am NOT fine! Don\'t tell me I\'m fine!" Dismissing his feelings escalated the situation. Telling someone in distress they\'re fine invalidates their experience and increases agitation.',
+            quality: 'less-ideal',
+            reflection: 'Validation first, always. "You\'re fine" is problem-solving dressed as reassurance. It tells the person their feelings are wrong — which makes everything worse.'
+          },
+          {
+            label: 'Step close calmly, lower your body, and say gently: "Gerald, I can see you\'re upset. Let\'s step over here together where it\'s quieter"',
+            outcome: 'Gerald\'s breathing slows slightly. You guide him to a quiet corner. "I want to go home," he repeats, but softer now. "I hear you," you say. "Let\'s sit here for a moment." After five minutes of calm presence, Gerald relaxes. You don\'t try to explain or fix — you just stay with him.',
+            quality: 'best',
+            reflection: 'You removed the pressure (the group), validated his feelings ("I can see you\'re upset"), and used the PPA approach — front, low, slow. Going with his reality rather than correcting it brought him back to calm.'
+          },
+          {
+            label: 'Ask the carer to take Gerald outside to calm down',
+            outcome: 'Gerald resists, feeling pushed out. The carer is stressed and the interaction becomes a struggle near the door. Other Members are distressed watching. The situation needed de-escalation, not removal.',
+            quality: 'less-ideal',
+            reflection: 'Asking someone to leave during distress can feel like punishment. The Host role is to de-escalate first. If it doesn\'t settle, then involve the Lead Host — not hand it off to the carer.'
+          }
+        ]
+      },
+      8: {
+        title: 'The Painter',
+        situation: 'Diane, 79, has mild dementia and trembling hands. Today the activity is watercolour painting. She picks up a brush eagerly but her hand shakes and paint splatters across the table. She looks embarrassed. Another Host whispers to you: "Maybe we should give Diane something easier to do."',
+        choices: [
+          {
+            label: 'Agree — suggest Diane does colouring-in instead, which is safer',
+            outcome: 'Diane puts down the brush, looking deflated. "I used to paint beautifully," she says quietly. The "safer" option took away something she loved. Her autonomy was overridden by someone else\'s comfort with risk.',
+            quality: 'less-ideal',
+            reflection: 'The dignity of risk means people have the right to do what matters to them, even imperfectly. "I still want to" is more important than "I used to."'
+          },
+          {
+            label: 'Smile at Diane, say "The splatters look brilliant — very abstract!", and quietly adapt: thicker brush, steadier surface, no fuss',
+            outcome: 'Diane laughs. "Abstract, is it!" She paints with the thicker brush and produces something she\'s genuinely proud of. At the end she asks if she can take it home. The adaptation let her do what she wanted, with dignity intact and joy preserved.',
+            quality: 'best',
+            reflection: 'This is autonomy with adaptation. You didn\'t take the activity away — you adapted it so she could still participate. Humour and normalisation ("splatters look brilliant") preserved her dignity. The joy was worth the mess.'
+          },
+          {
+            label: 'Help Diane by guiding her hand to keep it steady',
+            outcome: 'Diane stiffens and pulls her hand away. "I can manage," she says firmly. The physical intervention, however well-intended, felt like being controlled. She stops painting and sits quietly for the rest of the session.',
+            quality: 'less-ideal',
+            reflection: 'Helping hands can feel like taking over. Adapt the environment (tools, surface), not the person. Let them lead. Offer, don\'t impose.'
+          }
+        ]
+      },
+      9: {
+        title: 'The Phone Number',
+        situation: 'You\'ve been chatting with Rose every week for two months. She\'s lonely between sessions and today she says: "You\'re the only person who really understands me. Can I have your phone number? I\'d love to call you during the week." She looks at you with genuine hope.',
+        choices: [
+          {
+            label: 'Give her your number — she\'s lonely and it would mean so much to her',
+            outcome: 'Rose calls three times that week, then daily. She becomes anxious if you don\'t answer. At Club, she follows you everywhere and gets upset when you talk to other Members. What started as kindness created dependency. Your own wellbeing suffers too.',
+            quality: 'less-ideal',
+            reflection: 'The instinct to help is beautiful, but crossing this boundary doesn\'t serve Rose long-term. It creates dependency on one person rather than building a wider circle of connection.'
+          },
+          {
+            label: 'Say warmly: "Rose, I really enjoy our chats too. I can\'t share my number, but let me connect you with the Concierge — they can help with support between sessions"',
+            outcome: 'Rose looks briefly disappointed, but your warmth softens it. The Concierge arranges a befriending call and connects Rose with a local community group. Over the following weeks, Rose\'s circle widens. She still loves seeing you at Club — but she\'s not dependent on you alone.',
+            quality: 'best',
+            reflection: 'This is a warm boundary. You validated the connection ("I enjoy our chats too") while holding the limit kindly. You also offered something better — a wider support system. Professional doesn\'t mean cold.'
+          },
+          {
+            label: 'Say: "I\'m sorry, I\'m not allowed to do that — it\'s against the rules"',
+            outcome: 'Rose looks hurt. "Oh. I see. It\'s just rules then." She feels like a client, not a friend. The boundary was correct, but the delivery felt cold and procedural. She\'s quieter at Club the following week.',
+            quality: 'less-ideal',
+            reflection: 'Boundaries are right, but how you hold them matters. Blaming rules removes the human warmth. A boundary held with care feels different from one that feels like rejection.'
+          }
+        ]
+      },
+      10: {
+        title: 'The Plan That Isn\'t Working',
+        situation: 'You\'re midway through a Club session. The planned activity is a general knowledge quiz, but it\'s falling flat. Two Members with dementia are struggling with the questions and looking uncomfortable. Three others look bored. The energy in the room has dropped. Your Lead Host is busy in the kitchen.',
+        choices: [
+          {
+            label: 'Push through — the quiz is planned and people might warm up to it',
+            outcome: 'The two Members who were struggling excuse themselves to "get some air." They don\'t come back to the table. The bored Members start chatting amongst themselves. The quiz finishes with half the room disengaged. The plan was prioritised over the people.',
+            quality: 'less-ideal',
+            reflection: 'The plan serves connection — not the other way around. When an activity isn\'t working, the training says: pivot. Reading the room is one of your most important skills.'
+          },
+          {
+            label: 'Pause the quiz naturally: "Let\'s take a break from questions — I\'d love to hear about your favourite holiday memories instead"',
+            outcome: 'The mood shifts instantly. One Member lights up: "Oh, we used to go to Scarborough every summer!" Others jump in with their own stories. The two Members who were struggling are now sharing vivid, joyful memories — no right or wrong answers. The room fills with laughter and connection. This is what Club is for.',
+            quality: 'best',
+            reflection: 'You read the room and pivoted. Beautiful questions ("What\'s your favourite holiday memory?") invite everyone in. The switch from testing knowledge to sharing experience transformed the energy. Flexibility within structure is a core Host skill.'
+          },
+          {
+            label: 'Make the quiz easier by giving hints and helping the Members who are struggling',
+            outcome: 'The hints draw attention to who\'s struggling. One Member says: "Stop helping me, I\'m not stupid." The others feel patronised. Adapting the wrong activity is less effective than switching to the right one.',
+            quality: 'less-ideal',
+            reflection: 'Adapting is good, but sometimes the activity itself is the problem. A quiz tests memory — which can exclude people with dementia. Switching to something inclusive is better than patching something that doesn\'t fit.'
+          }
+        ]
+      }
+    };
+
+    // Express Interest Form Component
+    function ExpressInterestForm() {
+      const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+      const [submitted, setSubmitted] = useState(false);
+
+      const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 3000);
+      };
+
+      return (
+        <div className="p-8 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+          <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.slate }}>
+            Interested in Becoming a Host?
+          </h3>
+          <p className="text-gray-700 mb-6">
+            If you'd like to join our Host team or learn more about Good Company, we'd love to hear from you.
+          </p>
+          {submitted ? (
+            <div className="p-4 rounded-lg bg-green-100 text-green-800">
+              <p className="font-semibold">Thank you for your interest!</p>
+              <p className="text-sm mt-2">We'll be in touch soon with more information.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2" style={{ color: COLORS.slate }}>
+                  Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2" style={{ color: COLORS.slate }}>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2" style={{ color: COLORS.slate }}>
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2" style={{ color: COLORS.slate }}>
+                  Message (optional)
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  rows="4"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-400"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full px-6 py-3 rounded-lg font-bold text-white transition flex items-center justify-center gap-2"
+                style={{ backgroundColor: COLORS.orange }}
+              >
+                <Send size={18} />
+                Send
+              </button>
+            </form>
+          )}
+        </div>
+      );
+    }
+
+    // Quiz Module Component
+    function QuizModule({ moduleId, onComplete, onCancel, onReviewModule }) {
+      const quiz = QUIZZES[moduleId];
+      const [currentQuestion, setCurrentQuestion] = useState(0);
+      const [selectedOption, setSelectedOption] = useState(null);
+      const [confidence, setConfidence] = useState(null);
+      const [answered, setAnswered] = useState(false);
+      const [score, setScore] = useState(0);
+      const [finished, setFinished] = useState(false);
+      const [history, setHistory] = useState([]);
+
+      const question = quiz[currentQuestion];
+      const isCorrect = selectedOption === question.correct;
+
+      const getFeedbackMessage = (correct, conf) => {
+        if (correct && conf === 'certain') return 'Spot on — you clearly know this well.';
+        if (correct && conf === 'fairly') return 'Good instinct — you were right to trust yourself.';
+        if (correct && conf === 'guess') return 'Lucky guess! Worth revisiting so it sticks.';
+        if (!correct && conf === 'guess') return 'Honest self-awareness — that\'s a great starting point for learning.';
+        if (!correct && conf === 'fairly') return 'Close but not quite. A good area to revisit.';
+        if (!correct && conf === 'certain') return 'This one caught you out. Worth reviewing carefully — confident misconceptions can slip into practice.';
+      };
+
+      const handleSelectOption = (idx) => {
+        setSelectedOption(idx);
+      };
+
+      const handleSetConfidence = (level) => {
+        setConfidence(level);
+      };
+
+      const handleNextQuestion = () => {
+        const newHistory = [...history, { correct: isCorrect, confidence }];
+        setHistory(newHistory);
+        if (isCorrect) {
+          setScore(score + 1);
+        }
+        if (currentQuestion < quiz.length - 1) {
+          setCurrentQuestion(currentQuestion + 1);
+          setSelectedOption(null);
+          setConfidence(null);
+          setAnswered(false);
+        } else {
+          setFinished(true);
+        }
+      };
+
+      const handleSubmitAnswer = () => {
+        setAnswered(true);
+      };
+
+      if (finished) {
+        const passedQuiz = score >= 3;
+        return (
+          <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div className="text-5xl mb-4">
+                  {passedQuiz ? '🎉' : '📚'}
+                </div>
+                <h2 className="text-3xl font-bold mb-4" style={{ color: COLORS.slate }}>
+                  {passedQuiz ? 'Module Complete!' : 'Great Effort!'}
+                </h2>
+                <p className="text-2xl font-bold mb-2" style={{ color: COLORS.orange }}>
+                  Your Score: {score}/4 ({Math.round((score/4)*100)}%)
+                </p>
+                {passedQuiz && (
+                  <p className="text-green-600 font-semibold mb-6">
+                    You've passed this module! You can retake it anytime to refresh.
+                  </p>
+                )}
+                {!passedQuiz && (
+                  <div className="mb-6 p-4 rounded-lg bg-blue-100 text-blue-800">
+                    <p className="font-semibold">You need 3/4 correct to pass</p>
+                    <p className="text-sm mt-2">Try again — each attempt helps it stick!</p>
+                  </div>
+                )}
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => onReviewModule(moduleId)}
+                    className="px-6 py-3 rounded-lg font-bold text-white transition"
+                    style={{ backgroundColor: COLORS.orange }}
+                  >
+                    Review Module
+                  </button>
+                  <button
+                    onClick={onCancel}
+                    className="px-6 py-3 rounded-lg font-bold border-2 transition"
+                    style={{ borderColor: COLORS.orange, color: COLORS.orange }}
+                  >
+                    Back to Learning
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              {/* Progress */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-semibold" style={{ color: COLORS.slate }}>
+                    Question {currentQuestion + 1} of {quiz.length}
+                  </span>
+                  <span className="text-sm font-semibold" style={{ color: COLORS.orange }}>
+                    Score: {score}/{currentQuestion}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="h-full transition-all"
+                    style={{
+                      backgroundColor: COLORS.orange,
+                      width: `${((currentQuestion + 1) / quiz.length) * 100}%`
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Question */}
+              <h3 className="text-xl font-bold mb-6" style={{ color: COLORS.slate }}>
+                {question.q}
+              </h3>
+
+              {/* Options */}
+              <div className="space-y-3 mb-8">
+                {question.options.map((option, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSelectOption(idx)}
+                    className={`w-full p-4 text-left rounded-lg border-2 transition ${
+                      selectedOption === idx
+                        ? 'border-orange-400'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    style={{
+                      backgroundColor: selectedOption === idx ? COLORS.cream : 'white'
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center mt-0.5"
+                        style={{
+                          borderColor: selectedOption === idx ? COLORS.orange : '#ccc'
+                        }}
+                      >
+                        {selectedOption === idx && (
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: COLORS.orange }}
+                          />
+                        )}
+                      </div>
+                      <span className="text-gray-700">{option}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Confidence selector (before answering) */}
+              {!answered && selectedOption !== null && (
+                <div className="mb-8 p-4 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+                  <p className="text-sm font-semibold mb-3" style={{ color: COLORS.slate }}>
+                    How confident are you?
+                  </p>
+                  <div className="flex gap-3">
+                    {[
+                      { label: 'Guessing', value: 'guess' },
+                      { label: 'Fairly Sure', value: 'fairly' },
+                      { label: 'Certain', value: 'certain' }
+                    ].map(c => (
+                      <button
+                        key={c.value}
+                        onClick={() => handleSetConfidence(c.value)}
+                        className={`px-4 py-2 rounded-lg font-semibold transition text-sm ${
+                          confidence === c.value ? 'text-white' : 'text-gray-700 bg-white border border-gray-300'
+                        }`}
+                        style={{
+                          backgroundColor: confidence === c.value ? COLORS.orange : undefined
+                        }}
+                      >
+                        {c.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Feedback (after answering) */}
+              {answered && (
+                <div className={`mb-8 p-6 rounded-lg border-l-4 ${
+                  isCorrect ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-400'
+                }`}>
+                  <p className={`font-bold mb-3 ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                    {isCorrect ? 'Correct!' : 'Not quite.'}
+                  </p>
+                  <p className="text-gray-700 mb-3">
+                    {getFeedbackMessage(isCorrect, confidence)}
+                  </p>
+                  <p className="text-sm text-gray-600 bg-white p-3 rounded">
+                    {question.explanation}
+                  </p>
+                </div>
+              )}
+
+              {/* Buttons */}
+              <div className="flex gap-4">
+                {!answered && selectedOption !== null && confidence !== null && (
+                  <button
+                    onClick={handleSubmitAnswer}
+                    className="flex-1 px-6 py-3 rounded-lg font-bold text-white transition"
+                    style={{ backgroundColor: COLORS.orange }}
+                  >
+                    Submit Answer
+                  </button>
+                )}
+                {answered && (
+                  <button
+                    onClick={handleNextQuestion}
+                    className="flex-1 px-6 py-3 rounded-lg font-bold text-white transition"
+                    style={{ backgroundColor: COLORS.orange }}
+                  >
+                    {currentQuestion === quiz.length - 1 ? 'See Results' : 'Next Question'}
+                  </button>
+                )}
+                <button
+                  onClick={onCancel}
+                  className="px-6 py-3 rounded-lg font-bold border-2 transition"
+                  style={{ borderColor: COLORS.orange, color: COLORS.orange }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Scenario Practice Component
+    function ScenarioPractice({ moduleId, onBack }) {
+      const scenario = SCENARIOS[moduleId];
+      const [selectedChoice, setSelectedChoice] = useState(null);
+      const [showOutcome, setShowOutcome] = useState(false);
+
+      if (!scenario) {
+        return (
+          <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+                <p className="text-gray-700 mb-6">No scenario available for this module.</p>
+                <button
+                  onClick={onBack}
+                  className="px-6 py-3 rounded-lg font-bold text-white transition"
+                  style={{ backgroundColor: COLORS.orange }}
+                >
+                  Back
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <h2 className="text-3xl font-bold mb-2" style={{ color: COLORS.slate }}>
+                {scenario.title}
+              </h2>
+              <p className="text-gray-600 mb-8">Module {moduleId} • Scenario Practice</p>
+
+              {/* Situation */}
+              <div className="mb-8 p-6 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+                <h3 className="font-bold mb-3" style={{ color: COLORS.slate }}>
+                  The Situation
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {scenario.situation}
+                </p>
+              </div>
+
+              {/* Choices */}
+              <div className="space-y-4 mb-8">
+                {scenario.choices.map((choice, idx) => (
+                  <div key={idx}>
+                    <button
+                      onClick={() => {
+                        setSelectedChoice(idx);
+                        setShowOutcome(true);
+                      }}
+                      className={`w-full p-4 text-left rounded-lg border-2 transition ${
+                        selectedChoice === idx
+                          ? 'border-orange-400'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      style={{
+                        backgroundColor: selectedChoice === idx ? COLORS.cream : 'white'
+                      }}
+                    >
+                      <p className="font-semibold" style={{ color: COLORS.slate }}>
+                        {choice.label}
+                      </p>
+                    </button>
+
+                    {/* Outcome */}
+                    {showOutcome && selectedChoice === idx && (
+                      <div className={`mt-3 p-6 rounded-lg border-l-4 ${
+                        choice.quality === 'best'
+                          ? 'bg-green-50 border-green-400'
+                          : 'bg-amber-50 border-amber-400'
+                      }`}>
+                        <p className={`font-bold mb-3 ${
+                          choice.quality === 'best' ? 'text-green-800' : 'text-amber-800'
+                        }`}>
+                          {choice.quality === 'best' ? 'Best Choice' : 'Less Ideal'}
+                        </p>
+                        <p className="text-gray-700 mb-4">
+                          {choice.outcome}
+                        </p>
+                        <div className="bg-white p-3 rounded text-sm text-gray-600 border-l-2 border-gray-300">
+                          <p className="font-semibold mb-1">Reflection:</p>
+                          {choice.reflection}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Back button */}
+              <button
+                onClick={onBack}
+                className="px-6 py-3 rounded-lg font-bold text-white transition"
+                style={{ backgroundColor: COLORS.orange }}
+              >
+                Back to Module
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Main App Component
+    function HostTrainingApp() {
+      const [currentTab, setCurrentTab] = useState('learn');
+      const [expandedModule, setExpandedModule] = useState(null);
+      const [quizStates, setQuizStates] = useState({});
+      const [showQuiz, setShowQuiz] = useState(null);
+      const [showScenario, setShowScenario] = useState(null);
+
+      const handleStartQuiz = (moduleId) => {
+        setShowQuiz(moduleId);
+      };
+
+      const handleStartScenario = (moduleId) => {
+        setShowScenario(moduleId);
+      };
+
+      const handleCompleteQuiz = (moduleId) => {
+        setQuizStates(prev => ({
+          ...prev,
+          [moduleId]: { status: 'passed', completedAt: Date.now() }
+        }));
+        setShowQuiz(null);
+      };
+
+      const needsRefresh = (moduleId) => {
+        const state = quizStates[moduleId];
+        if (!state || state.status !== 'passed') return false;
+        const daysSince = (Date.now() - state.completedAt) / (1000 * 60 * 60 * 24);
+        return daysSince >= 14;
+      };
+
+      const handleCancelQuiz = () => {
+        setShowQuiz(null);
+      };
+
+      const handleReviewModule = (moduleId) => {
+        setShowQuiz(null);
+        setCurrentTab('learn');
+        setExpandedModule(moduleId);
+      };
+
+      const completedModules = Object.values(quizStates).filter(s => s && s.status === 'passed').length;
+      const progressPercent = (completedModules / 10) * 100;
+
+      const handleBackFromScenario = () => {
+        const mid = showScenario;
+        setShowScenario(null);
+        setCurrentTab('learn');
+        setExpandedModule(mid);
+      };
+
+      if (showScenario) {
+        return (
+          <ScenarioPractice
+            moduleId={showScenario}
+            onBack={handleBackFromScenario}
+          />
+        );
+      }
+
+      if (showQuiz) {
+        return (
+          <QuizModule
+            moduleId={showQuiz}
+            onComplete={() => handleCompleteQuiz(showQuiz)}
+            onCancel={handleCancelQuiz}
+            onReviewModule={handleReviewModule}
+          />
+        );
+      }
+
+      return (
+        <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh' }}>
+          {/* Top Navigation */}
+          <nav className="sticky top-0 z-40 bg-white shadow-sm border-b-2" style={{ borderColor: COLORS.orange }}>
+            <div className="max-w-6xl mx-auto px-4 py-4">
+              <div className="flex items-center justify-between gap-4">
+                <h1 className="text-xl font-bold" style={{ color: COLORS.slate }}>
+                  Good Company Host Training
+                </h1>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setCurrentTab('learn')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition ${
+                      currentTab === 'learn'
+                        ? 'text-white'
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                    style={{
+                      backgroundColor: currentTab === 'learn' ? COLORS.orange : 'transparent'
+                    }}
+                  >
+                    <span className="flex items-center gap-2">
+                      <BookOpen size={18} />
+                      Learn
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setCurrentTab('reference')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition ${
+                      currentTab === 'reference'
+                        ? 'text-white'
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                    style={{
+                      backgroundColor: currentTab === 'reference' ? COLORS.orange : 'transparent'
+                    }}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Lightbulb size={18} />
+                      Reference
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setCurrentTab('discover')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition ${
+                      currentTab === 'discover'
+                        ? 'text-white'
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                    style={{
+                      backgroundColor: currentTab === 'discover' ? COLORS.orange : 'transparent'
+                    }}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Heart size={18} />
+                      Discover
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          {/* LEARN TAB */}
+          {currentTab === 'learn' && (
+            <div className="max-w-6xl mx-auto px-4 py-8">
+              {/* Progress Summary */}
+              <div className="bg-white rounded-xl shadow-md p-8 mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold" style={{ color: COLORS.slate }}>
+                      Your Progress
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      {completedModules} of 10 modules completed
+                    </p>
+                  </div>
+                  {completedModules === 10 && (
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">🎉</div>
+                      <p className="font-bold text-green-600">All modules complete!</p>
+                    </div>
+                  )}
+                </div>
+                <div className="w-full bg-gray-200 h-4 rounded-full overflow-hidden">
+                  <div
+                    className="h-full transition-all duration-300"
+                    style={{
+                      backgroundColor: COLORS.orange,
+                      width: `${progressPercent}%`
+                    }}
+                  />
+                </div>
+                <p className="text-sm text-gray-600 mt-3">
+                  Pass 75% of each quiz to complete a module (need 3/4 correct)
+                </p>
+              </div>
+
+              {/* Modules Grid */}
+              <div className="grid gap-6 md:grid-cols-2">
+                {MODULES.map((module) => (
+                  <div
+                    key={module.id}
+                    className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
+                  >
+                    {/* Module Header */}
+                    <div
+                      className="p-6 text-white"
+                      style={{ backgroundColor: COLORS.slate }}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl font-bold">{module.id}</span>
+                            {quizStates[module.id] && quizStates[module.id].status === 'passed' && (
+                              needsRefresh(module.id)
+                                ? <RefreshCw size={20} className="text-amber-300" />
+                                : <Check size={24} className="text-green-300" />
+                            )}
+                          </div>
+                          <h3 className="text-xl font-bold mb-1">{module.title}</h3>
+                          <p className="text-gray-200 text-sm">{module.subtitle}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Module Body */}
+                    <div className="p-6">
+                      {/* Status */}
+                      <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+                        <p className="text-sm font-semibold" style={{ color: COLORS.slate }}>
+                          {quizStates[module.id] && quizStates[module.id].status === 'passed'
+                            ? needsRefresh(module.id)
+                              ? '↻ Time to refresh — retake the quiz to keep it fresh'
+                              : '✓ Module complete'
+                            : 'Not started'}
+                        </p>
+                      </div>
+
+                      {/* Key Concepts Preview */}
+                      <div className="mb-4">
+                        <p className="text-sm font-semibold text-gray-700 mb-2">Key topics:</p>
+                        <p className="text-sm text-gray-600">
+                          {module.keyConcepts.map(c => c.title).join(' • ')}
+                        </p>
+                      </div>
+
+                      {/* Expandable Content */}
+                      <button
+                        onClick={() => setExpandedModule(expandedModule === module.id ? null : module.id)}
+                        className="w-full flex items-center justify-between p-3 mb-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition text-left"
+                      >
+                        <span className="font-semibold text-gray-700">
+                          {expandedModule === module.id ? 'Hide' : 'View'} Content
+                        </span>
+                        {expandedModule === module.id ? (
+                          <ChevronUp size={20} />
+                        ) : (
+                          <ChevronDown size={20} />
+                        )}
+                      </button>
+
+                      {expandedModule === module.id && (
+                        <div className="mb-6 space-y-4 pb-4 border-t-2 border-gray-200 pt-4">
+                          {module.keyConcepts.map((concept, idx) => (
+                            <div key={idx}>
+                              <h4 className="font-bold text-gray-800">{concept.title}</h4>
+                              <p className="text-sm text-gray-600 mt-1">{concept.content}</p>
+                              {concept.scenarios && concept.scenarios.length > 0 && (
+                                <ul className="text-xs text-gray-500 mt-2 ml-4 space-y-1">
+                                  {concept.scenarios.map((scenario, s) => (
+                                    <li key={s}>• {scenario}</li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          ))}
+                          <div className="pt-3 border-t border-gray-200">
+                            <p className="text-xs font-semibold text-gray-700 mb-2">Takeaways:</p>
+                            <ul className="text-xs text-gray-600 space-y-1">
+                              {module.takeaways.map((t, idx) => (
+                                <li key={idx}>✓ {t}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Quiz & Scenario Buttons */}
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleStartQuiz(module.id)}
+                          className="flex-1 px-4 py-3 rounded-lg font-bold text-white transition"
+                          style={{ backgroundColor: COLORS.orange }}
+                        >
+                          {quizStates[module.id] && quizStates[module.id].status === 'passed'
+                            ? needsRefresh(module.id) ? '↻ Refresh Quiz' : 'Retake Quiz'
+                            : 'Start Quiz'}
+                        </button>
+                        {SCENARIOS[module.id] && (
+                          <button
+                            onClick={() => handleStartScenario(module.id)}
+                            className="flex-1 px-4 py-3 rounded-lg font-bold border-2 transition"
+                            style={{ borderColor: COLORS.orange, color: COLORS.orange }}
+                          >
+                            Practice Scenario
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* REFERENCE TAB */}
+          {currentTab === 'reference' && (
+            <div className="max-w-4xl mx-auto px-4 py-8">
+              <div className="bg-white rounded-xl shadow-md p-8">
+                <h2 className="text-3xl font-bold mb-8" style={{ color: COLORS.slate }}>
+                  Quick Reference Cards
+                </h2>
+
+                <div className="space-y-6">
+                  {/* Quick Reference 1 */}
+                  <div className="p-6 rounded-lg border-l-4" style={{ borderColor: COLORS.orange, backgroundColor: COLORS.cream }}>
+                    <h3 className="text-lg font-bold mb-3" style={{ color: COLORS.slate }}>
+                      The 10-Second Rule
+                    </h3>
+                    <p className="text-gray-700 mb-3">After asking someone a question, count to 10 silently before saying anything else.</p>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>✓ Gives processing time</li>
+                      <li>✓ Don't fill the silence</li>
+                      <li>✓ They might answer at 7</li>
+                      <li>✓ Then simplify if needed</li>
+                    </ul>
+                  </div>
+
+                  {/* Quick Reference 2 */}
+                  <div className="p-6 rounded-lg border-l-4" style={{ borderColor: COLORS.orange, backgroundColor: COLORS.cream }}>
+                    <h3 className="text-lg font-bold mb-3" style={{ color: COLORS.slate }}>
+                      PPA - Positive Physical Approach
+                    </h3>
+                    <div className="space-y-2 text-sm text-gray-600">
+                      <p><strong>Front:</strong> Approach from where they can see you</p>
+                      <p><strong>Low:</strong> Get to their eye level</p>
+                      <p><strong>Slow:</strong> Speak slowly, pause</p>
+                      <p><strong>Greeting:</strong> Warm, familiar: "Hi Margaret, it's Claire"</p>
+                      <p><strong>Permission:</strong> "Can I sit with you?"</p>
+                      <p><strong>Connect:</strong> Touch, eye contact, then communicate</p>
+                    </div>
+                  </div>
+
+                  {/* Quick Reference 3 */}
+                  <div className="p-6 rounded-lg border-l-4" style={{ borderColor: COLORS.orange, backgroundColor: COLORS.cream }}>
+                    <h3 className="text-lg font-bold mb-3" style={{ color: COLORS.slate }}>
+                      De-Escalation Steps
+                    </h3>
+                    <ol className="text-sm text-gray-600 space-y-2">
+                      <li><strong>1. Remove pressure</strong> - Stop the activity immediately</li>
+                      <li><strong>2. Validate</strong> - "I can see you're upset"</li>
+                      <li><strong>3. Offer presence</strong> - Sit with them, calm energy</li>
+                      <li><strong>4. Escalate if needed</strong> - Tell the Lead Host</li>
+                    </ol>
+                  </div>
+
+                  {/* Quick Reference 4 */}
+                  <div className="p-6 rounded-lg border-l-4" style={{ borderColor: COLORS.orange, backgroundColor: COLORS.cream }}>
+                    <h3 className="text-lg font-bold mb-3" style={{ color: COLORS.slate }}>
+                      The Six Senses (Observation)
+                    </h3>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>👁️ <strong>Sight:</strong> Bright eyes, movement, body language</li>
+                      <li>👂 <strong>Hearing:</strong> Tone, volume, silence</li>
+                      <li>👃 <strong>Smell & Taste:</strong> Appetite, unusual odours</li>
+                      <li>🤝 <strong>Touch & Movement:</strong> Warmth, stiffness, pain</li>
+                      <li>✨ <strong>Intuition:</strong> Your gut feeling</li>
+                      <li>🔄 <strong>Integration:</strong> Put it together</li>
+                    </ul>
+                  </div>
+
+                  {/* Quick Reference 5 */}
+                  <div className="p-6 rounded-lg border-l-4" style={{ borderColor: COLORS.orange, backgroundColor: COLORS.cream }}>
+                    <h3 className="text-lg font-bold mb-3" style={{ color: COLORS.slate }}>
+                      Beautiful Questions
+                    </h3>
+                    <div className="space-y-2 text-sm text-gray-600">
+                      <p>❌ "Do you remember...?" ✓ "What does this remind you of?"</p>
+                      <p>❌ "What did you do yesterday?" ✓ "What's been on your mind?"</p>
+                      <p>❌ "What is this?" ✓ "What do you notice?"</p>
+                      <p className="pt-2 italic">Beautiful questions invite reflection without testing memory.</p>
+                    </div>
+                  </div>
+
+                  {/* Quick Reference 6 */}
+                  <div className="p-6 rounded-lg border-l-4" style={{ borderColor: COLORS.orange, backgroundColor: COLORS.cream }}>
+                    <h3 className="text-lg font-bold mb-3" style={{ color: COLORS.slate }}>
+                      When to Escalate to Lead Host
+                    </h3>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>✓ Distress isn't settling after 5 minutes</li>
+                      <li>✓ Safety concern (self-harm, harm to others)</li>
+                      <li>✓ Safeguarding concern (abuse, neglect, exploitation)</li>
+                      <li>✓ You feel unsure or uncomfortable</li>
+                      <li>✓ Medical concern (chest pain, falls, injury)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DISCOVER TAB */}
+          {currentTab === 'discover' && (
+            <div className="max-w-4xl mx-auto px-4 py-8">
+              <div className="bg-white rounded-xl shadow-md p-8">
+                <h2 className="text-3xl font-bold mb-8" style={{ color: COLORS.slate }}>
+                  Discover More
+                </h2>
+
+                <div className="space-y-8">
+                  <div>
+                    <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.orange }}>
+                      About Good Company
+                    </h3>
+                    <p className="text-gray-700 mb-4">
+                      Good Company is a charity that brings older people together in community clubs. Our approach is relational, strengths-based, and person-centered. We believe that good company — meaningful connection, shared activity, and being truly seen — is one of the most powerful things we can offer.
+                    </p>
+                    <p className="text-gray-700">
+                      Hosts are the heart of Good Company. You create the space where people feel welcomed, valued, and part of something. This training equips you with the skills, knowledge, and confidence to do that well.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.orange }}>
+                      The Host Role
+                    </h3>
+                    <p className="text-gray-700 mb-4">
+                      A Host is someone who creates good company. You're not a therapist, carer, or activity leader. You're a warm, present human being who:
+                    </p>
+                    <ul className="text-gray-700 space-y-2 mb-4 ml-4">
+                      <li>✓ Notices and values people for who they are</li>
+                      <li>✓ Creates space for connection and belonging</li>
+                      <li>✓ Listens more than you speak</li>
+                      <li>✓ Supports others to be themselves</li>
+                      <li>✓ Escalates concerns to those trained</li>
+                      <li>✓ Shows up consistently</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.orange }}>
+                      Core Values
+                    </h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="p-4 bg-orange-50 rounded-lg border-l-4" style={{ borderColor: COLORS.orange }}>
+                        <p className="font-bold" style={{ color: COLORS.slate }}>Person-Centred</p>
+                        <p className="text-sm text-gray-600 mt-1">See the whole person, not just the condition or need.</p>
+                      </div>
+                      <div className="p-4 bg-orange-50 rounded-lg border-l-4" style={{ borderColor: COLORS.orange }}>
+                        <p className="font-bold" style={{ color: COLORS.slate }}>Relational</p>
+                        <p className="text-sm text-gray-600 mt-1">Presence matters more than perfection.</p>
+                      </div>
+                      <div className="p-4 bg-orange-50 rounded-lg border-l-4" style={{ borderColor: COLORS.orange }}>
+                        <p className="font-bold" style={{ color: COLORS.slate }}>Inclusive</p>
+                        <p className="text-sm text-gray-600 mt-1">Everyone belongs. No one eats alone.</p>
+                      </div>
+                      <div className="p-4 bg-orange-50 rounded-lg border-l-4" style={{ borderColor: COLORS.orange }}>
+                        <p className="font-bold" style={{ color: COLORS.slate }}>Strengths-Based</p>
+                        <p className="text-sm text-gray-600 mt-1">Focus on what people can do, not what they can't.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.orange }}>
+                      The Thursday Murder Club Principle
+                    </h3>
+                    <p className="text-gray-700 italic mb-3">
+                      "It's not about the activities. It's about the people. And the people are everything."
+                    </p>
+                    <p className="text-gray-700">
+                      Members come for activities, puzzles, and outings. But they stay for the friendships, the laughter, and the feeling of belonging to something that matters. As a Host, you create that belonging.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.orange }}>
+                      What the Training Covers
+                    </h3>
+                    <p className="text-gray-700 mb-4">
+                      Our one-day training programme covers 10 modules, each designed to build your confidence as a Host:
+                    </p>
+                    <div className="grid gap-2">
+                      {MODULES.map(m => (
+                        <div key={m.id} className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+                          <span className="font-bold text-sm mt-0.5" style={{ color: COLORS.orange }}>{m.id}</span>
+                          <div>
+                            <p className="font-semibold text-sm" style={{ color: COLORS.slate }}>{m.title}</p>
+                            <p className="text-xs text-gray-500">{m.subtitle}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <ExpressInterestForm />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Footer */}
+          <footer className="bg-white border-t-2 mt-12" style={{ borderColor: COLORS.orange }}>
+            <div className="max-w-6xl mx-auto px-4 py-8 text-center text-gray-600 text-sm">
+              <p>Good Company Host Training — Making the world a kinder place, one club at a time.</p>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(HostTrainingApp));
+  </script>
+</body>
+</html>
