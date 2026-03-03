@@ -20,10 +20,23 @@
       margin: 0;
       padding: 0;
       font-family: system-ui, -apple-system, sans-serif;
+      box-sizing: border-box;
     }
-    body {
+    html, body {
       margin: 0;
       font-family: system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      width: 100%;
+    }
+    /* Prevent any child from causing horizontal scroll */
+    #root {
+      overflow-x: hidden;
+      width: 100%;
+    }
+    /* Make long words break on mobile */
+    p, span, li, h1, h2, h3, h4 {
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -1352,8 +1365,8 @@
       };
 
       return (
-        <div className="p-8 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
-          <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.slate }}>
+        <div className="p-4 sm:p-8 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+          <h3 className="text-lg sm:text-xl font-bold mb-4" style={{ color: COLORS.slate }}>
             Interested in Becoming a Host?
           </h3>
           <p className="text-gray-700 mb-6">
@@ -1486,7 +1499,7 @@
         return (
           <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
             <div className="max-w-2xl mx-auto">
-              <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 text-center">
                 <div className="text-5xl mb-4">
                   {passedQuiz ? '🎉' : '📚'}
                 </div>
@@ -1532,7 +1545,7 @@
       return (
         <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8">
               {/* Progress */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
@@ -1600,7 +1613,7 @@
                   <p className="text-sm font-semibold mb-3" style={{ color: COLORS.slate }}>
                     How confident are you?
                   </p>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 sm:gap-3">
                     {[
                       { label: 'Guessing', value: 'guess' },
                       { label: 'Fairly Sure', value: 'fairly' },
@@ -1609,7 +1622,7 @@
                       <button
                         key={c.value}
                         onClick={() => handleSetConfidence(c.value)}
-                        className={`px-4 py-2 rounded-lg font-semibold transition text-sm ${
+                        className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-semibold transition text-xs sm:text-sm ${
                           confidence === c.value ? 'text-white' : 'text-gray-700 bg-white border border-gray-300'
                         }`}
                         style={{
@@ -1684,7 +1697,7 @@
         return (
           <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
             <div className="max-w-2xl mx-auto">
-              <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 text-center">
                 <p className="text-gray-700 mb-6">No scenario available for this module.</p>
                 <button
                   onClick={onBack}
@@ -1702,7 +1715,7 @@
       return (
         <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
           <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8">
               <h2 className="text-3xl font-bold mb-2" style={{ color: COLORS.slate }}>
                 {scenario.title}
               </h2>
@@ -1855,73 +1868,71 @@
         <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh' }}>
           {/* Top Navigation */}
           <nav className="sticky top-0 z-40 bg-white shadow-sm border-b-2" style={{ borderColor: COLORS.orange }}>
-            <div className="max-w-6xl mx-auto px-4 py-4">
-              <div className="flex items-center justify-between gap-4">
-                <h1 className="text-xl font-bold" style={{ color: COLORS.slate }}>
-                  Good Company Host Training
-                </h1>
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => setCurrentTab('learn')}
-                    className={`px-4 py-2 rounded-lg font-semibold transition ${
-                      currentTab === 'learn'
-                        ? 'text-white'
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
-                    style={{
-                      backgroundColor: currentTab === 'learn' ? COLORS.orange : 'transparent'
-                    }}
-                  >
-                    <span className="flex items-center gap-2">
-                      <BookOpen size={18} />
-                      Learn
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setCurrentTab('reference')}
-                    className={`px-4 py-2 rounded-lg font-semibold transition ${
-                      currentTab === 'reference'
-                        ? 'text-white'
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
-                    style={{
-                      backgroundColor: currentTab === 'reference' ? COLORS.orange : 'transparent'
-                    }}
-                  >
-                    <span className="flex items-center gap-2">
-                      <Lightbulb size={18} />
-                      Reference
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setCurrentTab('discover')}
-                    className={`px-4 py-2 rounded-lg font-semibold transition ${
-                      currentTab === 'discover'
-                        ? 'text-white'
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
-                    style={{
-                      backgroundColor: currentTab === 'discover' ? COLORS.orange : 'transparent'
-                    }}
-                  >
-                    <span className="flex items-center gap-2">
-                      <Heart size={18} />
-                      Discover
-                    </span>
-                  </button>
-                </div>
+            <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3">
+              <h1 className="text-lg sm:text-xl font-bold mb-2 text-center" style={{ color: COLORS.slate }}>
+                Good Company Host Training
+              </h1>
+              <div className="flex gap-1 justify-center">
+                <button
+                  onClick={() => setCurrentTab('learn')}
+                  className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition ${
+                    currentTab === 'learn'
+                      ? 'text-white'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                  style={{
+                    backgroundColor: currentTab === 'learn' ? COLORS.orange : 'transparent'
+                  }}
+                >
+                  <span className="flex items-center justify-center gap-1 sm:gap-2">
+                    <BookOpen size={16} />
+                    Learn
+                  </span>
+                </button>
+                <button
+                  onClick={() => setCurrentTab('reference')}
+                  className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition ${
+                    currentTab === 'reference'
+                      ? 'text-white'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                  style={{
+                    backgroundColor: currentTab === 'reference' ? COLORS.orange : 'transparent'
+                  }}
+                >
+                  <span className="flex items-center justify-center gap-1 sm:gap-2">
+                    <Lightbulb size={16} />
+                    Reference
+                  </span>
+                </button>
+                <button
+                  onClick={() => setCurrentTab('discover')}
+                  className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition ${
+                    currentTab === 'discover'
+                      ? 'text-white'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                  style={{
+                    backgroundColor: currentTab === 'discover' ? COLORS.orange : 'transparent'
+                  }}
+                >
+                  <span className="flex items-center justify-center gap-1 sm:gap-2">
+                    <Heart size={16} />
+                    Discover
+                  </span>
+                </button>
               </div>
             </div>
           </nav>
 
           {/* LEARN TAB */}
           {currentTab === 'learn' && (
-            <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
               {/* Progress Summary */}
-              <div className="bg-white rounded-xl shadow-md p-8 mb-8">
+              <div className="bg-white rounded-xl shadow-md p-4 sm:p-8 mb-6 sm:mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-2xl font-bold" style={{ color: COLORS.slate }}>
+                    <h2 className="text-xl sm:text-2xl font-bold" style={{ color: COLORS.slate }}>
                       Your Progress
                     </h2>
                     <p className="text-gray-600 mt-1">
@@ -1961,24 +1972,24 @@
                       className="p-6 text-white"
                       style={{ backgroundColor: COLORS.slate }}
                     >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-2xl font-bold">{module.id}</span>
+                            <span className="text-xl sm:text-2xl font-bold">{module.id}</span>
                             {quizStates[module.id] && quizStates[module.id].status === 'passed' && (
                               needsRefresh(module.id)
                                 ? <RefreshCw size={20} className="text-amber-300" />
                                 : <Check size={24} className="text-green-300" />
                             )}
                           </div>
-                          <h3 className="text-xl font-bold mb-1">{module.title}</h3>
+                          <h3 className="text-base sm:text-xl font-bold mb-1">{module.title}</h3>
                           <p className="text-gray-200 text-sm">{module.subtitle}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Module Body */}
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                       {/* Status */}
                       <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
                         <p className="text-sm font-semibold" style={{ color: COLORS.slate }}>
@@ -2040,10 +2051,10 @@
                       )}
 
                       {/* Quiz & Scenario Buttons */}
-                      <div className="flex gap-3">
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <button
                           onClick={() => handleStartQuiz(module.id)}
-                          className="flex-1 px-4 py-3 rounded-lg font-bold text-white transition"
+                          className="flex-1 px-4 py-3 rounded-lg font-bold text-white text-sm sm:text-base transition"
                           style={{ backgroundColor: COLORS.orange }}
                         >
                           {quizStates[module.id] && quizStates[module.id].status === 'passed'
@@ -2053,7 +2064,7 @@
                         {SCENARIOS[module.id] && (
                           <button
                             onClick={() => handleStartScenario(module.id)}
-                            className="flex-1 px-4 py-3 rounded-lg font-bold border-2 transition"
+                            className="flex-1 px-4 py-3 rounded-lg font-bold border-2 text-sm sm:text-base transition"
                             style={{ borderColor: COLORS.orange, color: COLORS.orange }}
                           >
                             Practice Scenario
@@ -2069,8 +2080,8 @@
 
           {/* REFERENCE TAB */}
           {currentTab === 'reference' && (
-            <div className="max-w-4xl mx-auto px-4 py-8">
-              <div className="bg-white rounded-xl shadow-md p-8">
+            <div className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+              <div className="bg-white rounded-xl shadow-md p-4 sm:p-8">
                 <h2 className="text-3xl font-bold mb-8" style={{ color: COLORS.slate }}>
                   Quick Reference Cards
                 </h2>
@@ -2166,8 +2177,8 @@
 
           {/* DISCOVER TAB */}
           {currentTab === 'discover' && (
-            <div className="max-w-4xl mx-auto px-4 py-8">
-              <div className="bg-white rounded-xl shadow-md p-8">
+            <div className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+              <div className="bg-white rounded-xl shadow-md p-4 sm:p-8">
                 <h2 className="text-3xl font-bold mb-8" style={{ color: COLORS.slate }}>
                   Discover More
                 </h2>
