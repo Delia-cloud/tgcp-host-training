@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tgcp-host-v2';
+const CACHE_NAME = 'tgcp-host-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
