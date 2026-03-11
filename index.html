@@ -1504,6 +1504,991 @@
       }
     };
 
+    // BRANCHING SCENARIOS - Multi-step decision trees, one per module
+    // Each scenario has: start situation → 3 choices → outcomes with follow-up → resolutions
+    const BRANCHING_SCENARIOS = {
+      1: {
+        id: 'bs1',
+        title: 'The Quiet Arrival',
+        moduleTitle: 'Relational Foundations',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'Margaret arrives at Club looking tired and withdrawn. She usually greets everyone warmly, but today she sits down without a word, staring at the table. Other Members are chatting happily around her.',
+            choices: [
+              { label: 'Bring her a tea and suggest she joins the card game', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Sit beside her quietly, match her energy, and after a moment say: "It\'s good to see you, Margaret"', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Tell the Lead Host that Margaret seems unwell and ask them to check on her', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Margaret takes the tea but doesn\'t touch it. She looks overwhelmed by the noise at the card table and retreats further into herself. You meant well, but you jumped to "doing for" rather than "being with."',
+            followUp: 'You notice Margaret is now sitting alone again, eyes down. What do you do next?',
+            choices: [
+              { label: 'Sit quietly beside her with no agenda — just be present', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Try a different activity — perhaps something quieter like looking at photos together', quality: 'good', nextNode: 'a_resolve_good' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'Margaret looks at you and her shoulders soften slightly. After a pause, she says: "I didn\'t sleep well. I just needed to be somewhere safe." She stays quiet, but she\'s no longer alone.',
+            followUp: 'Margaret seems comforted by your presence. After ten minutes, she looks around the room. What\'s your next move?',
+            choices: [
+              { label: 'Stay with her and let her set the pace — she\'ll join in when she\'s ready', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Gently ask if she\'d like to move closer to the group activity', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'The Lead Host approaches Margaret, who feels singled out and says "I\'m fine" defensively. She feels watched rather than cared for.',
+            followUp: 'Margaret now seems more closed off. You realise the escalation was premature. What do you try now?',
+            choices: [
+              { label: 'Give her space for a few minutes, then sit nearby with a warm but quiet presence', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Apologise to Margaret: "I just wanted to make sure you were okay"', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You sit beside Margaret in comfortable silence. After a few minutes, she sighs and says: "Thank you for not making me talk." By the end of the session, she\'s smiling gently at the conversation around her.',
+            reflection: 'Sometimes the most powerful thing a Host can do is simply be present. "Being with" rather than "doing for" is the foundation of relational care. You course-corrected beautifully.',
+            keyLearning: 'Presence over activity — match the person\'s energy before trying to lift it.'
+          },
+          a_resolve_good: {
+            id: 'a_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'You bring over a photo album of local landmarks. Margaret picks it up and starts turning pages. "Oh, I used to live near there," she says softly. It\'s not a big moment, but it\'s a quiet connection.',
+            reflection: 'A gentler, lower-stimulation activity was a better fit than the noisy card game. You adapted. Next time, try presence first — activities can come later.',
+            keyLearning: 'When your first approach doesn\'t work, step back and try something quieter and less demanding.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Margaret stays beside you and gradually starts watching the card game with a small smile. By the end, she says: "I\'m glad I came." She didn\'t need fixing — she needed to feel safe enough to find her own way back.',
+            reflection: 'Perfect attunement. You read her energy, matched it, offered presence, and let her lead. This is the heart of relational hosting — you didn\'t try to change her mood, you held space for it.',
+            keyLearning: 'Attunement means reading someone\'s state and responding to what they need, not what you think they need.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Margaret hesitates, then nods. "Maybe I\'ll just watch." She moves her chair closer and starts following the card game. It\'s a gentle transition. She doesn\'t play, but she\'s part of the group.',
+            reflection: 'A gentle nudge worked because you\'d already built trust through your quiet presence. The timing was right. Had you suggested this immediately, it might have felt like pressure.',
+            keyLearning: 'Earn the right to suggest by offering presence first. Timing matters as much as the approach.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You give Margaret a few minutes, then sit near her — not opposite, beside. After a while, she glances at you and says: "I didn\'t mean to snap." You smile: "No need to explain." She relaxes.',
+            reflection: 'You recognised that your first instinct (escalating) wasn\'t right, and you self-corrected. Sitting beside rather than opposite someone creates equality, not interrogation. Good recovery.',
+            keyLearning: 'If your first approach doesn\'t land, it\'s not too late. A Host can always course-correct with warmth.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Margaret softens a little. "It\'s alright," she says. "I just didn\'t want a fuss." You learn that sometimes the best thing is to approach gently yourself rather than sending someone else.',
+            reflection: 'The apology was kind, but drawing more attention may not help. Next time, try a quiet, personal approach first — your own calm presence is your greatest tool.',
+            keyLearning: 'Your presence as a Host is the first response. Escalation is for when you\'ve tried and it\'s beyond your role.'
+          }
+        }
+      },
+      2: {
+        id: 'bs2',
+        title: 'The New Face',
+        moduleTitle: 'Understanding Our Members',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'Arthur, 74, arrives at Club for the first time with his daughter. He was recently diagnosed with early-stage dementia. His daughter whispers to you: "He doesn\'t want people to know about his diagnosis. He\'s nervous." Arthur stands near the door, looking uncertain.',
+            choices: [
+              { label: 'Walk over and say: "Welcome to our memory support group! We\'ll take good care of you"', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Greet him warmly by name, ask what he enjoys, and introduce him to someone with a shared interest', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Give Arthur a welcome pack and explain how the Club works, the activities, and the schedule', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Arthur stiffens. He whispers to his daughter: "I told you — I don\'t want a support group." They move towards the door.',
+            followUp: 'Arthur is about to leave. His daughter looks at you apologetically. What do you do?',
+            choices: [
+              { label: 'Quickly say: "I\'m sorry — this is just a social club. We have tea, chat, and good company. No fuss, no labels"', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Let them go — he clearly doesn\'t want to be here and pushing would make it worse', quality: 'less-ideal', nextNode: 'a_resolve_less' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'Arthur relaxes when you ask about his hobbies. "I was an engineer," he says. You introduce him to Frank, who used to build model railways. By lunchtime, Arthur and Frank are deep in conversation.',
+            followUp: 'Arthur is settled and chatting happily. His daughter is watching from across the room, looking relieved but unsure what to do. What\'s your next move?',
+            choices: [
+              { label: 'Go to his daughter and say: "He\'s doing brilliantly. Why don\'t you have a cuppa — there are other family members here too"', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Let things be — Arthur is happy and his daughter can see that', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Arthur listens politely but looks overwhelmed. Too much information at once. He sits down but doesn\'t talk to anyone for the first hour.',
+            followUp: 'Arthur has been sitting quietly for a while, looking lost. What do you try?',
+            choices: [
+              { label: 'Sit beside him and ask: "What sort of work did you do, Arthur?" — start with him, not the Club', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Introduce him to the group activity happening nearby — get him involved', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Arthur pauses at the door. "Social club?" he says. "Yes — just people having a good time together," you reply. He looks at his daughter, then nods. "Alright. A cup of tea then." By the end of the session, he\'s asked when the next one is.',
+            reflection: 'Quick thinking saved the moment. You corrected the label without making it awkward. TGCP is dementia-welcoming, not dementia-focused — and that distinction matters hugely to people like Arthur.',
+            keyLearning: 'Language matters. "Social club" feels welcoming. "Support group" feels clinical. See the person, not the diagnosis.'
+          },
+          a_resolve_less: {
+            id: 'a_resolve_less',
+            type: 'resolution',
+            quality: 'less-ideal',
+            text: 'Arthur and his daughter leave. She calls the next day to say he won\'t try again. The label created a barrier that might not have existed with a different approach.',
+            reflection: 'Sometimes a gentle course-correction can save a first impression. Letting someone leave without trying feels respectful, but Arthur needed reassurance, not space. First impressions at Club are critical.',
+            keyLearning: 'A first visit is fragile. If your words create a barrier, try different words — don\'t give up on the connection.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'His daughter lights up. "Oh, can I?" She joins the carers\' table and starts chatting. Later she tells you: "I haven\'t relaxed like this in months." You\'ve welcomed two people today, not just one.',
+            reflection: 'Brilliant hosting — you saw the whole picture. Carers are Members too. By inviting her to let go and connect, you served both Arthur and his daughter. The whole family benefits from Club.',
+            keyLearning: 'Carers are Members too. Welcome the person AND their family — both need connection and respite.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Arthur has a great first session. His daughter stays watching from across the room, still on alert. She doesn\'t connect with anyone. Next time, she drops him off and leaves — she never quite found her own place at Club.',
+            reflection: 'Arthur\'s experience was wonderful, but you missed an opportunity with his daughter. At TGCP, carers are Members too — actively welcoming them helps the whole family.',
+            keyLearning: 'Don\'t assume the carer is fine just because the Member is settled. Actively include them.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Arthur\'s face changes when you ask about his work. "Forty years in engineering," he says, straightening up. You bridge him to Frank. By lunch, Arthur has forgotten his nerves — he\'s telling stories and laughing.',
+            reflection: 'You shifted from information-giving to person-knowing. Connection first, logistics later. When you asked about HIM, not the Club, Arthur came alive. That\'s person-centred hosting.',
+            keyLearning: 'When someone is overwhelmed, stop giving information and start showing interest in them as a person.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Arthur watches the activity for a moment, then joins in cautiously. He relaxes a bit, but he\'s participating in the activity, not yet connecting with people. It\'s a start.',
+            reflection: 'Activities can be a gateway to connection, but for someone nervous, being asked to perform can add pressure. Leading with personal conversation often works better for first-timers.',
+            keyLearning: 'Activities are the vehicle, not the destination. Connection with people matters more than joining in with tasks.'
+          }
+        }
+      },
+      3: {
+        id: 'bs3',
+        title: 'The Lunch Queue',
+        moduleTitle: 'Dementia-Confident Hosting',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'It\'s lunchtime at Club. Dorothy, who has moderate dementia, is standing at the food table looking confused. There are several dishes to choose from, and other Members are waiting behind her. She looks flustered and says: "I don\'t know... I don\'t know what to..."',
+            choices: [
+              { label: 'List all the options clearly: "There\'s shepherd\'s pie, chicken casserole, fish and chips, or a salad"', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Step beside her, smile, and say gently: "The shepherd\'s pie smells lovely today. Shall I get you some?"', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Ask the person behind Dorothy to go first while you help Dorothy decide', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Dorothy freezes. Four choices is too many. She looks more distressed. The person behind her sighs, which makes it worse.',
+            followUp: 'Dorothy is now saying "I\'ll just have nothing" and starting to walk away embarrassed. How do you recover?',
+            choices: [
+              { label: 'Gently touch her arm and say: "How about we try the shepherd\'s pie together? It smells wonderful"', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Say: "Don\'t worry, there\'s no rush. Take your time, Dorothy"', quality: 'good', nextNode: 'a_resolve_good' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'Dorothy\'s face lights up. "Oh yes, that would be lovely." She relaxes immediately. You guide her to a seat and bring her plate.',
+            followUp: 'Dorothy is happily eating. You notice another Member, Edna, hovering near the drinks table with a similar uncertain expression. What do you do?',
+            choices: [
+              { label: 'Use the same approach: go to Edna, offer one clear option warmly', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Ask another Host to help Edna while you check on Dorothy', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Dorothy notices people going ahead of her and feels like she\'s holding everyone up. She says quietly: "Don\'t worry about me" and moves away from the table without eating.',
+            followUp: 'Dorothy has sat down without any food. She looks deflated. What do you do?',
+            choices: [
+              { label: 'Bring her a plate with one dish and say: "I saved you some shepherd\'s pie, Dorothy — it\'s the best one today"', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Ask Dorothy what she\'d like you to bring her from the table', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Dorothy stops. "Shepherd\'s pie?" she says, brightening. "Yes please." You serve her and walk her to a seat. She starts chatting to the person beside her. Crisis averted — warmth and simplicity saved the moment.',
+            reflection: 'You simplified the choice to one clear option and used warmth to ease the pressure. The PPA approach — front, low, slow — works beautifully at mealtimes. Cognitive overload is reduced by offering, not asking.',
+            keyLearning: 'Simplify choices for people with dementia. Offer one warm option rather than listing many.'
+          },
+          a_resolve_good: {
+            id: 'a_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Dorothy pauses but still looks uncertain. "Take my time?" she repeats, unsure what that means. She needs a clear offer, not more thinking time. Eventually, you serve her something and she\'s grateful.',
+            reflection: '"No rush" is kind but unhelpful when someone is cognitively overwhelmed. They don\'t need more time — they need fewer choices. A direct, warm offer works better than patience alone.',
+            keyLearning: 'Time doesn\'t solve cognitive overload — simplification does. Offer rather than ask.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You approach Edna the same way: "Can I pour you a cup of tea, Edna?" She smiles: "Oh, lovely." You\'ve now helped two people without either of them feeling singled out. This is dementia-confident hosting in action.',
+            reflection: 'Excellent pattern recognition. You took what worked and applied it again. Consistency of approach — warm, simple, dignifying — creates a Club where everyone feels at ease.',
+            keyLearning: 'When you find an approach that works, use it consistently. Good hosting becomes a habit.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The other Host goes to Edna and helps her. Dorothy finishes eating happily. Both Members are looked after. Good teamwork — but next time, share what worked with your fellow Host so they can use the same gentle approach.',
+            reflection: 'Delegating is smart, but sharing your technique ("try offering one option warmly") makes the whole team stronger. Debrief is a good time to share these moments.',
+            keyLearning: 'Good hosting isn\'t just what you do — it\'s what you teach your team by sharing what works.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Dorothy looks surprised and pleased. "You saved it for me?" she says, smiling. She eats happily. You turned a difficult moment into one where she felt special rather than difficult.',
+            reflection: 'Beautiful recovery. "I saved you some" reframed the situation from "you couldn\'t cope" to "you\'re special." Language that preserves dignity is the hallmark of dementia-confident hosting.',
+            keyLearning: 'Reframe moments of difficulty into moments of care. Language shapes how people feel about themselves.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Dorothy thinks for a moment, then says: "I don\'t know what there is." You\'re back to the same problem — asking her to choose is what caused the difficulty. You end up describing the options and she freezes again.',
+            reflection: 'Asking "what would you like?" reopened the decision-making loop that caused the first difficulty. Offering is better than asking when someone is cognitively overwhelmed.',
+            keyLearning: 'Don\'t ask someone to choose when choosing is the problem. Offer warmly instead.'
+          }
+        }
+      },
+      4: {
+        id: 'bs4',
+        title: 'The Dominant Voice',
+        moduleTitle: 'Inclusion & Participation',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'During a group conversation, Brian is telling another long story. He\'s been talking for ten minutes. Three quieter Members haven\'t spoken at all, and you notice one of them, Sylvia, has started looking at the floor. Brian is lovely, but he fills every silence.',
+            choices: [
+              { label: 'Wait for Brian to finish — it would be rude to interrupt him', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Wait for a natural breath, then say: "That\'s a wonderful story, Brian. Sylvia, what do you think — does that remind you of anything?"', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Say: "Brian, let\'s give the others a chance to speak now"', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Brian talks for another fifteen minutes. Sylvia puts on her coat. Another quiet Member moves to a different table alone.',
+            followUp: 'Two Members have now disengaged from the group. Brian is still talking happily, unaware. What do you do?',
+            choices: [
+              { label: 'Go to Sylvia and start a separate, quieter conversation with her', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Wait for Brian to pause and then redirect to a group activity that gives everyone a turn', quality: 'good', nextNode: 'a_resolve_good' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'Brian beams at the compliment. Sylvia looks up, surprised to be invited in. "Well," she says, "my father used to say something like that..." and shares a beautiful memory.',
+            followUp: 'The conversation is now flowing between several people. Brian looks happy to listen. But you notice another quiet Member, Pat, still hasn\'t spoken. What do you try?',
+            choices: [
+              { label: 'Use the same technique: bridge from someone else\'s comment to Pat with a gentle question', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Catch Pat\'s eye and smile warmly — not everyone needs to speak to feel included', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Brian looks hurt. "Sorry, I didn\'t realise I was going on," he says, and goes quiet for the rest of the session.',
+            followUp: 'Brian is now sitting silently, looking deflated. The group feels awkward. How do you repair this?',
+            choices: [
+              { label: 'Sit beside Brian and say warmly: "Your stories are brilliant, Brian. Tell me more about the one with the boat"', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Move on with the group and hope Brian recovers — you needed to make space for others', quality: 'less-ideal', nextNode: 'c_resolve_less' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You sit beside Sylvia and ask: "What were you thinking about just now?" She opens up about her garden. Pat joins the conversation too. You\'ve created a second, gentler circle — and both conversations are thriving.',
+            reflection: 'When you can\'t redirect the dominant voice, creating a parallel space is smart hosting. Inclusion sometimes means creating multiple conversation circles rather than forcing one big group.',
+            keyLearning: 'If one conversation excludes people, create another. Inclusion isn\'t always about fixing the group — sometimes it\'s about offering alternatives.'
+          },
+          a_resolve_good: {
+            id: 'a_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'You suggest the group does a round of "one word that describes your week." Everyone gets a turn. Brian says "busy" and laughs. The structure helps balance the voices, though it feels a bit forced.',
+            reflection: 'Structured activities can equalise participation when free conversation doesn\'t work. The "value then redirect" approach would have been smoother, but this solved the immediate problem.',
+            keyLearning: 'Structured turn-taking activities help when conversation dynamics become unbalanced.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You gently say: "Pat, you\'ve got a lovely smile — what\'s making you happy today?" Pat laughs: "Just enjoying listening to everyone." She didn\'t need to speak, but being invited in made her feel seen.',
+            reflection: 'Perfect. Some people participate by listening — and that\'s valid. But being invited means they CHOSE to listen rather than being overlooked. The invitation is what matters.',
+            keyLearning: 'Inclusion means being invited, even if you choose to listen. Everyone should feel they have a voice, even if they don\'t use it.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Pat smiles back and seems content. She\'s been listening and enjoying the stories. Not everyone needs to speak to feel part of things — but you\'ll never know if she wanted to contribute unless you invite her.',
+            reflection: 'A warm smile is kind, but without the invitation, Pat might leave feeling she was overlooked. It takes courage for quiet people to speak up — a gentle bridge from the Host makes it easier.',
+            keyLearning: 'Don\'t assume quiet people are happy being quiet. A gentle invitation costs nothing and might mean everything.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Brian brightens. "The boat one? Oh, that\'s a good one!" He tells you the story one-to-one. You\'ve given him an audience while freeing the group. Later, you find a moment to bring him back in naturally.',
+            reflection: 'Excellent repair. You validated Brian as a person ("your stories are brilliant") while moving him from group domination to individual connection. He felt valued, not silenced.',
+            keyLearning: 'If you accidentally hurt someone\'s feelings, repair quickly with warmth. Value the person while redirecting the behaviour.'
+          },
+          c_resolve_less: {
+            id: 'c_resolve_less',
+            type: 'resolution',
+            quality: 'less-ideal',
+            text: 'Brian doesn\'t recover. He sits quietly until his carer arrives, then leaves without his usual cheerful goodbye. He doesn\'t come back the following week. The correction felt like a public telling-off.',
+            reflection: 'When someone is hurt in a group setting, they need repair from the person who caused it. Moving on without addressing Brian\'s feelings left a wound. "Value then redirect" prevents this.',
+            keyLearning: 'Never leave someone feeling diminished. If your approach causes hurt, go to them with warmth. Repair is always possible.'
+          }
+        }
+      },
+      5: {
+        id: 'bs5',
+        title: 'Something Feels Different',
+        moduleTitle: 'Six Senses Observation',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'You\'ve been greeting Harold every week for three months. He\'s usually cheerful, smartly dressed, and loves his tea with two sugars. Today he arrives in yesterday\'s clothes, hasn\'t shaved, and when you offer tea he says: "Whatever." He sits alone. You can\'t put your finger on it, but something feels off.',
+            choices: [
+              { label: 'Make a note to mention it at debrief — he might just be having an off day', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Sit with Harold, check in gently, then share specific observations with the Lead Host', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Ask Harold directly: "Are you feeling alright? You don\'t look yourself today"', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'At debrief you mention it, but by then the details are hazy. Next week Harold doesn\'t come. The signs were there, but waiting diluted the observation.',
+            followUp: 'Harold has missed Club. You feel guilty for not acting sooner. What do you do now?',
+            choices: [
+              { label: 'Tell the Lead Host everything you remember and ask the Concierge to check on Harold', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Wait to see if he comes next week — he might just be unwell', quality: 'less-ideal', nextNode: 'a_resolve_less' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'You sit beside Harold and say: "Fancy a biscuit with that tea?" He shrugs, but takes one. After a few quiet minutes you tell the Lead Host: "Harold\'s in yesterday\'s clothes, unshaved, refused his usual tea. Something feels different."',
+            followUp: 'The Lead Host thanks you and speaks to Harold discreetly. Harold admits his wife went into hospital. What\'s your role now?',
+            choices: [
+              { label: 'Continue being warm to Harold during the session — your job is connection, the Lead Host handles the next steps', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Ask Harold if there\'s anything practical you can do to help', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Harold bristles: "I\'m fine. Why, what\'s wrong with me?" He feels scrutinised. He spends the rest of the session avoiding you.',
+            followUp: 'Harold is now keeping his distance. But you still sense something is wrong. What do you try?',
+            choices: [
+              { label: 'Give him space but stay nearby. Later, mention your observations to the Lead Host using specific facts', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Try again later: "Harold, I didn\'t mean to upset you. I just care about how you\'re doing"', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'The Concierge calls Harold\'s daughter and learns his wife is in hospital. They arrange support. Harold comes back the following week and quietly says: "Thank you." Your observation — even late — still helped.',
+            reflection: 'Better late than never. But next time, trust your instincts in the moment. The Six Senses approach says: notice, describe, share. Don\'t wait for debrief when something feels urgent.',
+            keyLearning: 'Trust your intuition. If something feels off, share it with the Lead Host now, not later.'
+          },
+          a_resolve_less: {
+            id: 'a_resolve_less',
+            type: 'resolution',
+            quality: 'less-ideal',
+            text: 'Harold doesn\'t come the following week either. Or the one after. By the time someone checks, he\'s been struggling alone at home for three weeks. The window for early support was missed.',
+            reflection: 'Waiting and hoping isn\'t a strategy when your senses are telling you something. The Six Senses approach exists precisely for moments like this. Your gut was right — next time, act on it.',
+            keyLearning: 'When your instinct says something is wrong, act. The cost of checking in is zero. The cost of not checking can be enormous.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You stay warm and present with Harold for the rest of the session. You don\'t ask about his wife — the Lead Host is handling that. Instead, you make sure he has good company. He leaves looking slightly lighter. The Concierge arranges a check-in call.',
+            reflection: 'Perfect role clarity. You observed, reported, and then returned to your core job — being a warm, present Host. You trusted the system. Observe, describe, share, then return to connection.',
+            keyLearning: 'The Host observes and connects. The Lead Host coordinates. The Concierge follows up. Trust the system — your role is to notice and to be present.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Harold looks at you and says: "I\'m managing." It\'s kind of you to offer, but practical help is the Concierge\'s domain. Your role as Host is connection and observation — let the system do the rest.',
+            reflection: 'The offer was well-intentioned, but Hosts aren\'t case workers. Your power is in noticing and connecting. Practical support is coordinated by the Lead Host and Concierge.',
+            keyLearning: 'Your role is to notice, connect, and share observations. Practical support is coordinated through the team structure — trust it.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You give Harold space and later tell the Lead Host: "Harold\'s in yesterday\'s clothes, unshaved, and turned down tea — that\'s not like him." The Lead Host speaks to Harold gently and the Concierge arranges support.',
+            reflection: 'Good recovery. You shifted from direct questioning to factual observation shared with the right person. Specific details — "yesterday\'s clothes, unshaved, refused tea" — are much more useful than "he seemed off."',
+            keyLearning: 'Describe what you see, not what you think. Facts help the team act. Opinions can be debated — observations can\'t.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Harold softens slightly. "I know," he says. "It\'s just... my wife." He doesn\'t say more, but the door is open. You let the Lead Host know, and they follow up.',
+            reflection: 'The apology worked because it was genuine. Harold sensed your care. Next time, lead with gentleness first — "How are things?" opens doors that "You don\'t look yourself" might close.',
+            keyLearning: 'If your first approach felt too direct, try a softer check-in. "How are things?" is gentler than commenting on appearance.'
+          }
+        }
+      },
+      6: {
+        id: 'bs6',
+        title: 'Beyond Words',
+        moduleTitle: 'Sensory Engagement',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'Elsie has advanced dementia and hasn\'t spoken in weeks. She sits in her chair, eyes often closed. Her family say she "isn\'t really there anymore." Today during Club, the room is noisy and Elsie seems agitated — rocking slightly, gripping the armrest. Other Hosts are busy with activities.',
+            choices: [
+              { label: 'She seems settled enough — focus on the Members who are more engaged', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Move to a quieter corner with Elsie, hold her hand gently, and hum a song from her era softly', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Ask her carer what usually calms her down', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Elsie\'s agitation increases. She starts making distressed sounds. Her carer has to take her home early.',
+            followUp: 'As Elsie\'s carer is getting ready to leave, you feel a pang of guilt. There\'s still a moment before they go. What do you do?',
+            choices: [
+              { label: 'Go to Elsie, kneel down, and gently say goodbye with a soft touch on her hand', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Apologise to the carer and say you\'ll pay more attention to Elsie next time', quality: 'good', nextNode: 'a_resolve_good' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'As you hum, Elsie\'s grip on the armrest loosens. Her rocking slows. She opens her eyes and looks at you. After a few minutes, she squeezes your hand.',
+            followUp: 'Elsie is calm and seems present. Her carer is watching, looking amazed. What do you do next?',
+            choices: [
+              { label: 'Continue the sensory connection — try gentle hand massage with lavender lotion', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Tell the carer what worked so they can try it at home', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'The carer shrugs: "Nothing really helps anymore." You\'re stuck, and Elsie is still agitated.',
+            followUp: 'The carer seems defeated. Elsie is still rocking. You sense the carer has lost hope but you haven\'t. What do you try?',
+            choices: [
+              { label: 'Say: "May I try something?" Then sit with Elsie, hold her hand, and hum softly', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Try placing a soft blanket around Elsie\'s shoulders — sensory comfort without sound', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You kneel beside Elsie and place your hand on hers. "See you next week, Elsie," you say softly. Her eyes open briefly. Her carer says: "She knows." It\'s a small moment, but it matters enormously.',
+            reflection: 'Even at the door, connection is possible. You showed Elsie she was seen. The Namaste Principle tells us: meaningful connection is possible at every stage of dementia. Never assume someone is beyond reach.',
+            keyLearning: 'It\'s never too late for a moment of connection. Even a gentle goodbye shows someone they matter.'
+          },
+          a_resolve_good: {
+            id: 'a_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The carer nods: "It would be nice. She used to love music." You make a mental note. Next time, you\'ll try music with Elsie. The conversation gave you a clue for next week.',
+            reflection: 'Speaking to the carer gave you useful information for the future. But the opportunity was in the present moment, with Elsie. Next time, try connecting with HER first — carers often underestimate what\'s still possible.',
+            keyLearning: 'Don\'t postpone connection to next time. The person in front of you needs you now.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'As you massage Elsie\'s hands, she closes her eyes — but peacefully this time. Her face is relaxed. The carer whispers: "She hasn\'t been this calm in months." You\'ve shown that Elsie is still here, still responsive, still a person who can receive care and love.',
+            reflection: 'This is the Namaste Principle in practice — loving care through the senses when words are no longer the pathway. Touch, scent, music — these remain when language fades. You proved that Elsie is still very much "there."',
+            keyLearning: 'When words fade, the senses remain. Touch, music, and scent are powerful pathways to connection at every stage.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The carer looks hopeful for the first time. "She used to love music. And gardening," they say. "Maybe I could try humming at home." You\'ve given the carer something precious — renewed hope.',
+            reflection: 'Sharing what worked with the carer extends your impact beyond Club. Families sometimes lose hope because they focus on what\'s lost. Showing them what\'s still possible is one of the most powerful things a Host can do.',
+            keyLearning: 'When something works, share it with the family. You might be giving them back hope they thought was gone.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'The carer watches as you sit beside Elsie, humming softly. Elsie\'s rocking slows. She opens her eyes. The carer\'s eyes fill with tears: "She hasn\'t looked at anyone like that in weeks." You found a way when the family had given up.',
+            reflection: 'Hosts can sometimes reach someone in ways their family thought weren\'t possible anymore. Families carry grief, exhaustion, and loss. A fresh approach — with curiosity and hope — can open doors everyone assumed were closed.',
+            keyLearning: 'Don\'t accept "nothing helps" as final. Fresh eyes and gentle curiosity can find pathways that grief has hidden.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The blanket settles Elsie a little — the weight and warmth reduce her rocking. She\'s calmer but not connected. It helped with comfort but didn\'t create the human connection that music and touch can offer.',
+            reflection: 'Physical comfort is important, but connection requires human engagement — touch, voice, presence. The blanket was a good instinct (sensory calming), but adding your presence (hand-holding, humming) would complete the picture.',
+            keyLearning: 'Sensory comfort is a start, but human connection goes further. Combine physical comfort with personal presence.'
+          }
+        }
+      },
+      7: {
+        id: 'bs7',
+        title: 'The Storm',
+        moduleTitle: 'Handling Discomfort & Distress',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'During a group activity, Gerald suddenly pushes his chair back and shouts: "I want to go HOME! You\'re keeping me here!" His face is red, his fists are clenched. Other Members look startled. His carer looks embarrassed and says: "Gerald, stop it, you\'re being silly."',
+            choices: [
+              { label: 'Try to reassure him: "Gerald, you\'re fine! We\'re all having a nice time. Sit back down"', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Step close calmly, lower your body, and say gently: "Gerald, I can see you\'re upset. Let\'s step over here together where it\'s quieter"', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Ask the carer to take Gerald outside to calm down', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Gerald gets louder: "I am NOT fine! Don\'t tell me I\'m fine!" Dismissing his feelings escalated the situation. Other Members are now anxious.',
+            followUp: 'Gerald is shouting louder. The room is tense. You realise your approach made things worse. What do you do now?',
+            choices: [
+              { label: 'Change approach completely: lower your body, soften your voice, and validate: "Gerald, I can hear you\'re upset. I\'m sorry. Let\'s walk together"', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Step back and ask the Lead Host to take over', quality: 'good', nextNode: 'a_resolve_good' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'Gerald\'s breathing slows slightly. You guide him to a quiet corner. "I want to go home," he repeats, but softer now. "I hear you," you say. After five minutes of calm presence, Gerald relaxes.',
+            followUp: 'Gerald is calmer now but looks exhausted. His carer approaches looking worried. How do you handle this?',
+            choices: [
+              { label: 'Quietly update the carer: "He\'s settling. Sometimes the group is just too much. He\'s okay now"', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Suggest Gerald might want to go home early today — he\'s been through a lot', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Gerald resists, feeling pushed out. The carer is stressed and the interaction becomes a struggle near the door. Other Members are distressed watching.',
+            followUp: 'The situation at the door is escalating. Gerald is upset, the carer is upset, and the room is watching. What do you do?',
+            choices: [
+              { label: 'Step in calmly, gently redirect: "Gerald, let\'s all take a breath. How about we sit here for a moment?" — take the pressure off', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Ask another Host to settle the room while you support Gerald and the carer', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'The complete change in your approach reaches Gerald. Your low, calm voice, and the validation — "I\'m sorry" — diffuses the anger. He walks with you to a quiet spot. After a few minutes, he says: "I just got confused." He returns to the group later and finishes his tea.',
+            reflection: 'Brilliant course-correction. You recognised your first approach was wrong and completely changed your strategy. The apology ("I\'m sorry") showed Gerald you were listening. Validation before solution always works better than reassurance.',
+            keyLearning: 'If your approach escalates distress, change it immediately. Apologising and validating feelings is the fastest path to de-escalation.'
+          },
+          a_resolve_good: {
+            id: 'a_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The Lead Host comes over with a calm, gentle manner and de-escalates the situation. Gerald settles. Asking for help was the right call — but next time, try the gentle approach yourself first.',
+            reflection: 'Recognising you needed help was smart and appropriate. But the Lead Host used exactly the approach you could have used: lowering their body, soft voice, validation. You have those skills too — trust them.',
+            keyLearning: 'Escalating to the Lead Host is always available, but try the PPA approach yourself first. You\'re closer to the moment than anyone.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'The carer relaxes. "Thank you," she says. "He\'s been like this at home too." You reassure her gently. Gerald sits quietly, looking around the room. After a while, he picks up his tea. The carer later tells the Lead Host: "He calmed down faster here than he ever does at home."',
+            reflection: 'You de-escalated Gerald AND supported the carer — both needed your calm presence. By explaining what happened simply ("sometimes the group is too much"), you normalised it. Carers often feel judged when their family member gets distressed.',
+            keyLearning: 'After distress settles, support the carer too. They need reassurance that outbursts are understood and their family member is welcome.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Gerald goes home early. The carer is grateful but you wonder if leaving was the right call. Gerald might have settled and enjoyed the rest of the session. Early departure can reinforce the message that outbursts mean you have to leave.',
+            reflection: 'Sometimes leaving early is right, but it shouldn\'t be the automatic response to distress. Gerald calmed down — with a little more time, he might have re-engaged. Distress passes; don\'t let it define the whole session.',
+            keyLearning: 'Don\'t rush to send someone home after distress. If they\'ve settled, let them stay and re-engage at their own pace.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Your calm intervention pauses the struggle. Gerald stops resisting. The carer steps back. You sit with Gerald in the quiet area and he slowly settles. "I just wanted to go home," he says softly. "I know," you reply. "Let\'s sit here for a bit."',
+            reflection: 'You interrupted a power struggle and replaced it with calm presence. Removing the pressure (no one is making Gerald do anything) allowed him to settle. De-escalation is about removing pressure, not adding control.',
+            keyLearning: 'In a power struggle, the Host\'s job is to reduce pressure, not add to it. Step in with calm, not with force.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The other Host reassures the group while you guide Gerald and the carer to a quieter spot. The split focus works — the room calms and Gerald starts to settle. Good teamwork, even if the initial approach caused the problem.',
+            reflection: 'Dual focus — one Host on Gerald, one on the room — is good crisis management. But prevention is better: if you\'d validated Gerald\'s feelings first instead of sending him out, the crisis at the door might not have happened.',
+            keyLearning: 'Good teamwork can recover a difficult moment. But remember: validate feelings before taking action. Prevention beats crisis management.'
+          }
+        }
+      },
+      8: {
+        id: 'bs8',
+        title: 'The Painter',
+        moduleTitle: 'Safety & Autonomy',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'Diane, 79, has mild dementia and trembling hands. Today the activity is watercolour painting. She picks up a brush eagerly but her hand shakes and paint splatters across the table. She looks embarrassed. Another Host whispers to you: "Maybe we should give Diane something easier to do."',
+            choices: [
+              { label: 'Agree — suggest Diane does colouring-in instead, which is safer', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Smile at Diane, say "The splatters look brilliant — very abstract!", and quietly adapt: thicker brush, steadier surface, no fuss', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Help Diane by guiding her hand to keep it steady', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Diane puts down the brush, looking deflated. "I used to paint beautifully," she says quietly. The "safer" option took away something she loved.',
+            followUp: 'Diane is sitting with a colouring page but hasn\'t touched the crayons. She looks sad. How do you make this right?',
+            choices: [
+              { label: 'Bring the paints back and say: "Diane, your painting was lovely. How about we try with a bigger brush?"', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Sit beside Diane and start colouring too — make the simpler activity feel companionable, not childish', quality: 'good', nextNode: 'a_resolve_good' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'Diane laughs. "Abstract, is it!" She paints with the thicker brush and produces something she\'s genuinely proud of. At the end she asks if she can take it home.',
+            followUp: 'Diane is beaming and showing others her painting. The Host who suggested colouring-in looks surprised. How do you use this moment?',
+            choices: [
+              { label: 'Later, gently share with the other Host: "Sometimes adapting the tools lets people do what they love safely"', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Let the moment speak for itself — Diane\'s joy is the best teaching tool', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Diane stiffens and pulls her hand away. "I can manage," she says firmly. She stops painting and sits quietly for the rest of the session.',
+            followUp: 'Diane is sitting with her arms crossed, looking upset. The physical intervention, however well-intended, felt like being controlled. What do you try?',
+            choices: [
+              { label: 'Apologise: "I\'m sorry, Diane. You\'re absolutely right — you can manage. Shall I get you a wider brush?"', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Give her space — she clearly wants to be left alone right now', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Diane\'s face lights up when she sees the paints again. "Oh, can I?" With the bigger brush, she paints with more confidence. The splatters become part of the art. She\'s reclaimed something that matters to her.',
+            reflection: 'Beautiful recovery. The dignity of risk means people have the right to do what matters to them, even imperfectly. By adapting the tool (bigger brush) rather than the person (simpler activity), you preserved Diane\'s identity as a painter.',
+            keyLearning: 'Adapt the environment, not the person. A bigger brush, a steadier surface — small changes that preserve dignity and autonomy.'
+          },
+          a_resolve_good: {
+            id: 'a_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Diane picks up a crayon and starts colouring alongside you. She doesn\'t seem excited, but she\'s not alone. "This is nice," she says. But you notice she keeps glancing at the watercolours on the next table.',
+            reflection: 'Companionship made the simpler activity bearable, but Diane wanted to paint, not colour. Joining her was kind — but offering her back the paints (with adaptation) would have been kinder. She told you what she wanted with her eyes.',
+            keyLearning: 'Watch where people\'s eyes go — it tells you what they want. Don\'t settle for "good enough" when "what they love" is achievable with adaptation.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'At debrief, you share the moment gently. The other Host says: "I didn\'t think of it that way. I was worried about the mess." You reply: "The mess was worth it — did you see her face?" Next time, that Host thinks twice before suggesting the "easier" option.',
+            reflection: 'Sharing learning with colleagues is part of being a great Host. You did it kindly, focusing on Diane\'s joy rather than criticising. Teams grow strongest when they learn from each other\'s good moments.',
+            keyLearning: 'Share what works with your team. Kind, specific examples teach better than rules. "Did you see her face?" is more powerful than a lecture.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Diane\'s joy speaks for itself. The other Host sees how happy she is and seems to reconsider. But without a conversation, the learning might not stick — next time, that Host might still default to the "safe" option.',
+            reflection: 'Diane\'s joy was powerful, but people don\'t always learn from observation alone. A gentle debrief conversation would help cement the principle: adapt the tools, not the person.',
+            keyLearning: 'Modelling good practice is important, but sharing WHY it worked helps the learning stick for your team.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Diane softens at the apology. "A wider brush? Yes, let\'s try that." She picks up the bigger brush and starts painting again. The splatters are bigger now, but she\'s smiling. "Abstract art," she declares. Autonomy restored.',
+            reflection: 'The apology was crucial — it returned control to Diane. "You\'re right, you can manage" validated her autonomy. Then offering an adaptation (wider brush) showed you were on her side, not taking over. Respect, then adapt.',
+            keyLearning: 'When you\'ve overstepped someone\'s autonomy, apologise and return control. Then offer adaptation, not restriction.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Diane sits quietly. She doesn\'t paint, but she watches others. At the end she says: "Maybe next time." The space helped her feel less controlled, but the joy of painting was lost for today.',
+            reflection: 'Giving space is respectful, but Diane\'s withdrawal was caused by your approach, not her preference. She wanted to paint. An apology and a gentler offer ("wider brush?") might have brought her back into the activity today.',
+            keyLearning: 'When someone withdraws because of your approach, don\'t just give space — try to repair. A gentle apology can reopen the door.'
+          }
+        }
+      },
+      9: {
+        id: 'bs9',
+        title: 'The Phone Number',
+        moduleTitle: 'Boundaries & Role Clarity',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'You\'ve been chatting with Rose every week for two months. She\'s lonely between sessions and today she says: "You\'re the only person who really understands me. Can I have your phone number? I\'d love to call you during the week." She looks at you with genuine hope.',
+            choices: [
+              { label: 'Give her your number — she\'s lonely and it would mean so much to her', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Say warmly: "Rose, I really enjoy our chats too. I can\'t share my number, but let me connect you with the Concierge"', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Say: "I\'m sorry, I\'m not allowed to do that — it\'s against the rules"', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Rose calls three times that week, then daily. She becomes anxious if you don\'t answer. At Club, she follows you everywhere. What started as kindness created dependency.',
+            followUp: 'Rose is now calling you every day and getting upset when you don\'t answer. You realise the boundary was there for a reason. What do you do?',
+            choices: [
+              { label: 'Speak to the Lead Host honestly about what happened and ask for help to re-establish the boundary', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Stop answering Rose\'s calls and hope she stops on her own', quality: 'less-ideal', nextNode: 'a_resolve_less' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'Rose looks briefly disappointed, but your warmth softens it. "The Concierge?" she asks. "Yes — they can arrange support between sessions," you say.',
+            followUp: 'The Concierge has connected Rose with a befriending service. Next week at Club, Rose says: "I spoke to someone lovely on the phone." But then she adds: "It\'s not the same as talking to you though." How do you respond?',
+            choices: [
+              { label: 'Say: "I\'m glad you liked them! And you\'ve always got our chats at Club to look forward to"', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Reassure her: "I know it\'s different. But the more people in your circle, the more supported you\'ll feel"', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'Rose looks hurt. "Oh. I see. It\'s just rules then." She feels like a client, not a friend. She\'s quieter at Club the following week.',
+            followUp: 'Rose is distant with you now. The boundary was right, but the delivery felt cold. How do you repair this?',
+            choices: [
+              { label: 'Next week, warmly say: "Rose, I was thinking about our chat. I do enjoy talking to you — let me introduce you to the Concierge, who can help between sessions"', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Be extra warm with Rose at Club to show you still care, even though you can\'t give your number', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'The Lead Host helps you navigate the situation with kindness. They speak to Rose gently and connect her with the Concierge. It takes a few weeks, but Rose\'s circle widens. She still loves seeing you at Club — but she\'s no longer dependent on you alone.',
+            reflection: 'Honesty with your Lead Host was brave and right. Boundaries exist to protect both the Host and the Member. Asking for help isn\'t failure — it\'s wisdom. The system works when you trust it.',
+            keyLearning: 'If you cross a boundary, tell your Lead Host. They\'ll help you fix it without judgement. The sooner you act, the easier the repair.'
+          },
+          a_resolve_less: {
+            id: 'a_resolve_less',
+            type: 'resolution',
+            quality: 'less-ideal',
+            text: 'Rose becomes increasingly anxious. She starts calling at all hours. When you don\'t answer, she\'s upset at Club. The relationship that was once warm has become stressful for both of you. The silence felt like rejection, not a boundary.',
+            reflection: 'Ghosting someone who trusts you is never the answer. Rose needed a clear, warm conversation — not silence. When boundaries need resetting, do it with honesty and care, and involve your Lead Host.',
+            keyLearning: 'Silence is not a boundary — it\'s abandonment. If you need to reset a boundary, do it face-to-face with warmth, and get support from your team.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Rose smiles. "You\'re right — I do look forward to Tuesdays." Over the following weeks, Rose mentions new people she\'s spoken to. Her world is expanding. She still lights up when she sees you, but she\'s building her own network of support.',
+            reflection: 'This is a warm boundary held beautifully. You validated the connection, maintained the limit, and offered something better — a wider support system. Rose didn\'t lose you; she gained others. Professional doesn\'t mean cold.',
+            keyLearning: 'A warm boundary protects the relationship AND the person. Validate, hold the limit, and offer alternatives — all with genuine warmth.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Rose nods thoughtfully. "I suppose you\'re right." She doesn\'t seem fully convinced, but she\'s accepting it. Over time, as the befriending calls continue, she starts to see the value. The transition just takes a little longer.',
+            reflection: 'Your response was truthful but a bit clinical. "More people in your circle" sounds like advice rather than warmth. Leading with feeling — "I\'m glad" or "I enjoy our chats" — connects before redirecting.',
+            keyLearning: 'When holding a boundary, lead with warmth and feeling before moving to logic. People accept limits better when they feel valued first.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'Rose\'s face softens. "You were thinking about me?" she says. "Of course," you reply. "Our chats mean a lot." The warmth repairs what the cold delivery broke. Rose meets the Concierge and her support circle grows.',
+            reflection: 'Beautiful repair. "I was thinking about you" showed Rose she matters to you as a person, not just as a rule to follow. The boundary is the same — but now it\'s held with care, not procedure. How you hold a boundary is as important as holding it.',
+            keyLearning: 'It\'s never too late to repair a cold moment with warmth. "I was thinking about you" costs nothing and changes everything.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'Rose warms up a bit in response to your extra effort. She\'s friendlier again. But she never brings up the phone number again — and she never asks about the Concierge. The warmth helped, but the missed opportunity for connection beyond Club remains.',
+            reflection: 'Being warm is necessary but not sufficient. Rose needed two things: warmth AND an alternative. By not offering the Concierge or befriending support, her loneliness between sessions continues. Next time, pair warmth with a practical offer.',
+            keyLearning: 'Warmth alone isn\'t enough. Pair care with action — hold the boundary warmly AND offer a real alternative.'
+          }
+        }
+      },
+      10: {
+        id: 'bs10',
+        title: 'The Plan That Isn\'t Working',
+        moduleTitle: 'Running a Club',
+        nodes: {
+          start: {
+            id: 'start',
+            type: 'situation',
+            text: 'You\'re midway through a Club session. The planned activity is a general knowledge quiz, but it\'s falling flat. Two Members with dementia are struggling with the questions and looking uncomfortable. Three others look bored. The energy in the room has dropped. Your Lead Host is busy in the kitchen.',
+            choices: [
+              { label: 'Push through — the quiz is planned and people might warm up to it', quality: 'less-ideal', nextNode: 'a_outcome' },
+              { label: 'Pause the quiz naturally: "Let\'s take a break from questions — I\'d love to hear about your favourite holiday memories instead"', quality: 'best', nextNode: 'b_outcome' },
+              { label: 'Make the quiz easier by giving hints and helping the Members who are struggling', quality: 'less-ideal', nextNode: 'c_outcome' }
+            ]
+          },
+          a_outcome: {
+            id: 'a_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'The two Members who were struggling excuse themselves to "get some air." They don\'t come back to the table. The bored Members start chatting amongst themselves. The quiz finishes with half the room disengaged.',
+            followUp: 'The quiz is over but the room feels flat. Two Members are still away from the table. How do you re-energise the group?',
+            choices: [
+              { label: 'Go to the Members who left, check they\'re okay, then suggest everyone shares a favourite memory or song', quality: 'best', nextNode: 'a_resolve_best' },
+              { label: 'Start the next planned activity — keep things moving', quality: 'less-ideal', nextNode: 'a_resolve_less' }
+            ]
+          },
+          b_outcome: {
+            id: 'b_outcome',
+            type: 'outcome',
+            quality: 'best',
+            text: 'The mood shifts instantly. One Member lights up: "Oh, we used to go to Scarborough every summer!" Others jump in with their own stories. The room fills with laughter and connection.',
+            followUp: 'The room is buzzing with stories and laughter. Even the Members who were struggling with the quiz are now sharing vivid memories. The Lead Host comes back from the kitchen and sees the energy. What do you do?',
+            choices: [
+              { label: 'Let the conversation flow naturally — this IS the activity now. Connection is happening', quality: 'best', nextNode: 'b_resolve_best' },
+              { label: 'Briefly tell the Lead Host: "The quiz wasn\'t working so I switched to reminiscence. Hope that\'s okay"', quality: 'good', nextNode: 'b_resolve_good' }
+            ]
+          },
+          c_outcome: {
+            id: 'c_outcome',
+            type: 'outcome',
+            quality: 'less-ideal',
+            text: 'The hints draw attention to who\'s struggling. One Member says: "Stop helping me, I\'m not stupid." The others feel patronised.',
+            followUp: 'The atmosphere has turned uncomfortable. The Member who spoke up looks upset. The quiz has made things worse. What do you do?',
+            choices: [
+              { label: 'Acknowledge the moment honestly: "You\'re absolutely right. Let\'s ditch the quiz — tell me about the best holiday you\'ve ever had"', quality: 'best', nextNode: 'c_resolve_best' },
+              { label: 'Quietly stop the quiz and move to a different activity without drawing more attention to the awkwardness', quality: 'good', nextNode: 'c_resolve_good' }
+            ]
+          },
+          a_resolve_best: {
+            id: 'a_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'You find the two Members and say: "Sorry about the quiz — it wasn\'t great, was it? We\'re sharing memories now. Would you like to join us?" They come back. The memory-sharing activity draws everyone in — no right or wrong answers, just stories and connection.',
+            reflection: 'You acknowledged the quiz didn\'t work, checked on people who withdrew, and offered something better. The ability to pivot is one of the most important skills in hosting. The plan serves connection, not the other way around.',
+            keyLearning: 'When an activity fails, acknowledge it, check on people who withdrew, and offer something that invites everyone in.'
+          },
+          a_resolve_less: {
+            id: 'a_resolve_less',
+            type: 'resolution',
+            quality: 'less-ideal',
+            text: 'The next activity starts but the two Members who left don\'t rejoin. They sit apart for the rest of the session. One of them says to their carer: "I don\'t want to come back." Pushing through the quiz and moving on without checking cost more than the activity itself.',
+            reflection: 'When Members withdraw, always go to them. Not checking said: "We didn\'t notice you left." People who feel excluded may not give you a second chance. The activity failed — but the response to the failure mattered even more.',
+            keyLearning: 'When someone withdraws, always go to them. The moment after failure is more important than the failure itself.'
+          },
+          b_resolve_best: {
+            id: 'b_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'The reminiscence flows for twenty minutes. Members are sharing, laughing, and connecting. The two who were struggling with the quiz are now the most animated — their long-term memories are vivid and joyful. This is what Club is for. You don\'t need to explain your decision — the room speaks for itself.',
+            reflection: 'Perfect instinct. You read the room, pivoted gracefully, and let connection lead. "Beautiful questions" — open-ended, memory-rich, with no wrong answers — are the Host\'s secret weapon. The plan serves the people, not the other way around.',
+            keyLearning: 'Read the room. Pivot when something isn\'t working. Beautiful questions invite everyone in because there are no wrong answers.'
+          },
+          b_resolve_good: {
+            id: 'b_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The Lead Host smiles: "Brilliant idea — look at them!" They\'re not just okay with your pivot — they\'re impressed. Your confidence grows. Next time, you\'ll trust your instincts without needing permission.',
+            reflection: 'Checking in with the Lead Host is thoughtful, but you didn\'t need permission to make that call. Hosts are empowered to read the room and adapt in the moment. Trust your training — the Lead Host trusts you.',
+            keyLearning: 'You\'re empowered to pivot activities in the moment. You don\'t need permission to respond to what the room needs. Trust your training.'
+          },
+          c_resolve_best: {
+            id: 'c_resolve_best',
+            type: 'resolution',
+            quality: 'best',
+            text: 'The Member who spoke up looks surprised — then laughs. "Holiday? Benidorm, 1985. Best two weeks of my life." Others jump in. The energy completely transforms. Your honesty — "let\'s ditch the quiz" — felt respectful, not dismissive. Everyone relaxes.',
+            reflection: 'Acknowledging the mistake openly ("You\'re right, let\'s ditch it") showed humility and respect. The Member who felt patronised now feels heard. Beautiful questions replaced the quiz, and the room transformed. Vulnerability in a Host builds trust.',
+            keyLearning: 'Admitting something isn\'t working builds trust. Hosts don\'t have to be perfect — they have to be honest and responsive.'
+          },
+          c_resolve_good: {
+            id: 'c_resolve_good',
+            type: 'resolution',
+            quality: 'good',
+            text: 'The quiz stops and you suggest a card game. People move to the table but the mood is still slightly off. The Member who spoke up hasn\'t been acknowledged, and the moment hasn\'t been resolved — just avoided.',
+            reflection: 'Moving on without acknowledging the difficult moment leaves it hanging. The Member who said "I\'m not stupid" needed to hear: "You\'re right, and I\'m sorry." Acknowledgement resolves tension; avoidance lets it linger.',
+            keyLearning: 'Don\'t just move past an awkward moment — acknowledge it. A quick, honest "you\'re right" resolves more than silence ever does.'
+          }
+        }
+      }
+    };
+
     // ASK THE TRAINING - Search Component
     function AskTheTraining() {
       const [query, setQuery] = useState('');
@@ -2287,7 +3272,408 @@
       );
     }
 
-    // Scenario Practice Component
+    // Scenario Progress Hook - persists branching scenario progress to localStorage
+    function useScenarioProgress() {
+      const STORAGE_KEY = 'tgcp_scenario_progress';
+      const [progress, setProgressState] = useState(() => {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          return saved ? JSON.parse(saved) : {};
+        } catch { return {}; }
+      });
+
+      const setProgress = useCallback((updater) => {
+        setProgressState(prev => {
+          const next = typeof updater === 'function' ? updater(prev) : updater;
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+          return next;
+        });
+      }, []);
+
+      return [progress, setProgress];
+    }
+
+    // Quality indicator colors and labels
+    const QUALITY_CONFIG = {
+      'best': { color: '#22c55e', bgColor: '#f0fdf4', borderColor: '#22c55e', label: 'Best Practice', icon: '★' },
+      'good': { color: '#f59e0b', bgColor: '#fffbeb', borderColor: '#f59e0b', label: 'Good Approach', icon: '◆' },
+      'less-ideal': { color: '#f97316', bgColor: '#fff7ed', borderColor: '#f97316', label: 'Less Ideal', icon: '●' }
+    };
+
+    // Branching Scenario Player Component
+    function BranchingScenario({ moduleId, onBack, onComplete }) {
+      const scenario = BRANCHING_SCENARIOS[moduleId];
+      const [currentNodeId, setCurrentNodeId] = useState('start');
+      const [path, setPath] = useState([]);
+      const [selectedChoice, setSelectedChoice] = useState(null);
+      const [showingOutcome, setShowingOutcome] = useState(false);
+      const [isComplete, setIsComplete] = useState(false);
+      const [fadeIn, setFadeIn] = useState(true);
+
+      const currentNode = scenario ? scenario.nodes[currentNodeId] : null;
+
+      const handleChoice = (choice, idx) => {
+        setSelectedChoice(idx);
+        setShowingOutcome(true);
+        setPath(prev => [...prev, { nodeId: currentNodeId, choiceLabel: choice.label, quality: choice.quality, nextNode: choice.nextNode }]);
+      };
+
+      const handleContinue = () => {
+        const lastChoice = path[path.length - 1];
+        const nextNode = scenario.nodes[lastChoice.nextNode];
+
+        if (nextNode.type === 'resolution') {
+          setFadeIn(false);
+          setTimeout(() => {
+            setCurrentNodeId(lastChoice.nextNode);
+            setSelectedChoice(null);
+            setShowingOutcome(false);
+            setIsComplete(true);
+            setFadeIn(true);
+          }, 200);
+        } else {
+          setFadeIn(false);
+          setTimeout(() => {
+            setCurrentNodeId(lastChoice.nextNode);
+            setSelectedChoice(null);
+            setShowingOutcome(false);
+            setFadeIn(true);
+          }, 200);
+        }
+      };
+
+      if (!scenario) {
+        return (
+          <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '2rem' }}>
+            <div className="max-w-2xl mx-auto text-center">
+              <p className="text-gray-700 mb-6">No branching scenario available for this module.</p>
+              <button onClick={onBack} className="px-6 py-3 rounded-lg font-bold text-white" style={{ backgroundColor: COLORS.orange }}>Back</button>
+            </div>
+          </div>
+        );
+      }
+
+      // Resolution / reflection summary screen
+      if (isComplete) {
+        return (
+          <ScenarioReflection
+            scenario={scenario}
+            path={path}
+            currentNode={scenario.nodes[currentNodeId]}
+            moduleId={moduleId}
+            onTryAgain={() => {
+              setCurrentNodeId('start');
+              setPath([]);
+              setSelectedChoice(null);
+              setShowingOutcome(false);
+              setIsComplete(false);
+            }}
+            onBack={() => { if (onComplete) onComplete(path); onBack(); }}
+          />
+        );
+      }
+
+      // Progress indicator
+      const stepNum = currentNode.type === 'situation' ? 1 : currentNode.type === 'outcome' ? 2 : 3;
+      const stepLabels = ['Situation', 'Outcome', 'Follow-up'];
+
+      return (
+        <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '1rem 1rem 6rem' }}>
+          <div className="max-w-3xl mx-auto">
+            {/* Header */}
+            <div className="mb-4">
+              <button onClick={onBack} className="text-sm font-semibold mb-2 flex items-center gap-1" style={{ color: COLORS.orange }}>
+                ← Back
+              </button>
+              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: COLORS.slate }}>
+                {scenario.title}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">{scenario.moduleTitle} • Branching Scenario</p>
+            </div>
+
+            {/* Step progress dots */}
+            <div className="flex items-center gap-2 mb-6">
+              {stepLabels.map((label, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                      style={{
+                        backgroundColor: i + 1 <= stepNum ? COLORS.orange : '#e5e7eb',
+                        color: i + 1 <= stepNum ? 'white' : '#9ca3af'
+                      }}
+                    >
+                      {i + 1}
+                    </div>
+                    <span className="text-xs hidden sm:inline" style={{ color: i + 1 <= stepNum ? COLORS.slate : '#9ca3af' }}>
+                      {label}
+                    </span>
+                  </div>
+                  {i < stepLabels.length - 1 && (
+                    <div className="w-6 sm:w-10 h-0.5" style={{ backgroundColor: i + 1 < stepNum ? COLORS.orange : '#e5e7eb' }}></div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Main card */}
+            <div
+              className="bg-white rounded-xl shadow-lg p-4 sm:p-8"
+              style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.2s ease' }}
+            >
+              {/* Situation / Outcome text */}
+              {currentNode.type === 'situation' && (
+                <div className="mb-6 p-5 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+                  <h3 className="font-bold mb-3 flex items-center gap-2" style={{ color: COLORS.slate }}>
+                    <span className="text-lg">📖</span> The Situation
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">{currentNode.text}</p>
+                </div>
+              )}
+
+              {currentNode.type === 'outcome' && (
+                <div>
+                  <div className={`mb-5 p-5 rounded-lg border-l-4`} style={{
+                    backgroundColor: QUALITY_CONFIG[currentNode.quality].bgColor,
+                    borderColor: QUALITY_CONFIG[currentNode.quality].borderColor
+                  }}>
+                    <p className="font-bold mb-2 text-sm" style={{ color: QUALITY_CONFIG[currentNode.quality].color }}>
+                      {QUALITY_CONFIG[currentNode.quality].icon} {QUALITY_CONFIG[currentNode.quality].label}
+                    </p>
+                    <p className="text-gray-700 leading-relaxed">{currentNode.text}</p>
+                  </div>
+                  {currentNode.followUp && (
+                    <div className="mb-6 p-5 rounded-lg" style={{ backgroundColor: COLORS.cream }}>
+                      <h3 className="font-bold mb-3 flex items-center gap-2" style={{ color: COLORS.slate }}>
+                        <span className="text-lg">🔄</span> What happens next...
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed">{currentNode.followUp}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Choices */}
+              {!showingOutcome && currentNode.choices && (
+                <div>
+                  <p className="font-semibold text-sm mb-3" style={{ color: COLORS.slate }}>What do you do?</p>
+                  <div className="space-y-3">
+                    {currentNode.choices.map((choice, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleChoice(choice, idx)}
+                        className="w-full p-4 text-left rounded-lg border-2 transition hover:shadow-md"
+                        style={{ borderColor: '#e5e7eb', backgroundColor: 'white' }}
+                        onMouseOver={e => { e.currentTarget.style.borderColor = COLORS.orange; }}
+                        onMouseOut={e => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                      >
+                        <p className="text-sm sm:text-base" style={{ color: COLORS.slate }}>{choice.label}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* After selecting a choice - show what was chosen and continue button */}
+              {showingOutcome && (
+                <div>
+                  <div className="p-4 rounded-lg border-2 mb-4" style={{ borderColor: COLORS.orange, backgroundColor: COLORS.cream }}>
+                    <p className="text-xs font-semibold mb-1" style={{ color: COLORS.orange }}>Your choice:</p>
+                    <p className="text-sm" style={{ color: COLORS.slate }}>{currentNode.choices[selectedChoice].label}</p>
+                  </div>
+                  <button
+                    onClick={handleContinue}
+                    className="w-full py-3 rounded-lg font-bold text-white transition"
+                    style={{ backgroundColor: COLORS.orange }}
+                  >
+                    See what happens →
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Scenario Reflection / Summary Component
+    function ScenarioReflection({ scenario, path, currentNode, moduleId, onTryAgain, onBack }) {
+      const bestCount = path.filter(p => p.quality === 'best').length;
+      const totalChoices = path.length;
+      const overallQuality = bestCount === totalChoices ? 'best' : bestCount >= totalChoices / 2 ? 'good' : 'less-ideal';
+
+      return (
+        <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '1rem 1rem 6rem' }}>
+          <div className="max-w-3xl mx-auto">
+            {/* Header */}
+            <div className="mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: COLORS.slate }}>
+                Scenario Complete
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">{scenario.title} • {scenario.moduleTitle}</p>
+            </div>
+
+            {/* Resolution card */}
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 mb-6">
+              <div className={`p-5 rounded-lg border-l-4 mb-6`} style={{
+                backgroundColor: QUALITY_CONFIG[currentNode.quality].bgColor,
+                borderColor: QUALITY_CONFIG[currentNode.quality].borderColor
+              }}>
+                <p className="font-bold mb-2 text-sm" style={{ color: QUALITY_CONFIG[currentNode.quality].color }}>
+                  {QUALITY_CONFIG[currentNode.quality].icon} {QUALITY_CONFIG[currentNode.quality].label} — Final Outcome
+                </p>
+                <p className="text-gray-700 leading-relaxed">{currentNode.text}</p>
+              </div>
+
+              {/* Reflection */}
+              <div className="p-5 rounded-lg mb-6" style={{ backgroundColor: '#f0f9ff', borderLeft: '4px solid #3b82f6' }}>
+                <p className="font-bold mb-2 text-sm text-blue-800">💭 Reflection</p>
+                <p className="text-gray-700 leading-relaxed">{currentNode.reflection}</p>
+              </div>
+
+              {/* Key Learning */}
+              <div className="p-5 rounded-lg" style={{ backgroundColor: COLORS.cream, borderLeft: '4px solid ' + COLORS.orange }}>
+                <p className="font-bold mb-2 text-sm" style={{ color: COLORS.orange }}>🔑 Key Learning</p>
+                <p className="text-gray-700 leading-relaxed">{currentNode.keyLearning}</p>
+              </div>
+            </div>
+
+            {/* Path summary card */}
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 mb-6">
+              <h3 className="font-bold mb-4" style={{ color: COLORS.slate }}>Your Journey</h3>
+              <div className="space-y-3">
+                {path.map((step, idx) => {
+                  const qc = QUALITY_CONFIG[step.quality];
+                  return (
+                    <div key={idx} className="flex items-start gap-3">
+                      <div className="flex-shrink-0 mt-1">
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: qc.color }}>
+                          {idx + 1}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-700">{step.choiceLabel}</p>
+                        <span className="text-xs font-semibold" style={{ color: qc.color }}>{qc.label}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Score summary */}
+              <div className="mt-6 pt-4 border-t border-gray-200 text-center">
+                <p className="text-sm text-gray-600 mb-2">
+                  You made <strong>{bestCount}</strong> out of <strong>{totalChoices}</strong> best-practice choices
+                </p>
+                <div className="flex justify-center gap-1">
+                  {path.map((step, idx) => (
+                    <div key={idx} className="w-4 h-4 rounded-full" style={{ backgroundColor: QUALITY_CONFIG[step.quality].color }} title={step.quality}></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={onTryAgain}
+                className="flex-1 px-6 py-3 rounded-lg font-bold border-2 transition"
+                style={{ borderColor: COLORS.orange, color: COLORS.orange, backgroundColor: 'white' }}
+              >
+                🔄 Try a Different Path
+              </button>
+              <button
+                onClick={onBack}
+                className="flex-1 px-6 py-3 rounded-lg font-bold text-white transition"
+                style={{ backgroundColor: COLORS.orange }}
+              >
+                Back to Module
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Scenario Practice Hub - entry point for all scenarios in a module
+    function ScenarioPracticeHub({ moduleId, onBack, onStartBranching, onStartFlat, scenarioProgress }) {
+      const branchingScenario = BRANCHING_SCENARIOS[moduleId];
+      const flatScenario = SCENARIOS[moduleId];
+      const progress = scenarioProgress[`bs${moduleId}`];
+
+      return (
+        <div style={{ backgroundColor: COLORS.cream, minHeight: '100vh', padding: '1rem 1rem 6rem' }}>
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-6">
+              <button onClick={onBack} className="text-sm font-semibold mb-2 flex items-center gap-1" style={{ color: COLORS.orange }}>
+                ← Back to Module
+              </button>
+              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: COLORS.slate }}>
+                Scenario Practice
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">Module {moduleId} • Choose a scenario to practice</p>
+            </div>
+
+            {/* Branching Scenario Card */}
+            {branchingScenario && (
+              <div className="bg-white rounded-xl shadow-lg p-5 sm:p-8 mb-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: COLORS.orange }}>
+                        BRANCHING
+                      </span>
+                      {progress && progress.completed && (
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                          ✓ Completed
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold" style={{ color: COLORS.slate }}>{branchingScenario.title}</h3>
+                  </div>
+                </div>
+                <p className="text-gray-600 text-sm mb-1">{branchingScenario.moduleTitle}</p>
+                <p className="text-gray-500 text-xs mb-4">Multi-step scenario with follow-up decisions and reflective feedback</p>
+                {progress && progress.completed && (
+                  <p className="text-xs text-gray-400 mb-3">
+                    Played {progress.attempts} time{progress.attempts !== 1 ? 's' : ''} • Last played {new Date(progress.lastPlayed).toLocaleDateString()}
+                  </p>
+                )}
+                <button
+                  onClick={() => onStartBranching(moduleId)}
+                  className="w-full py-3 rounded-lg font-bold text-white transition"
+                  style={{ backgroundColor: COLORS.orange }}
+                >
+                  {progress && progress.completed ? '🔄 Try a Different Path' : '▶ Start Scenario'}
+                </button>
+              </div>
+            )}
+
+            {/* Flat Scenario Card (existing) */}
+            {flatScenario && (
+              <div className="bg-white rounded-xl shadow-md p-5 sm:p-8 mb-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: COLORS.cream, color: COLORS.slate }}>
+                    QUICK PRACTICE
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold mt-1" style={{ color: COLORS.slate }}>{flatScenario.title}</h3>
+                <p className="text-gray-500 text-xs mb-4 mt-1">Single-step scenario with immediate feedback</p>
+                <button
+                  onClick={() => onStartFlat(moduleId)}
+                  className="w-full py-3 rounded-lg font-bold border-2 transition"
+                  style={{ borderColor: COLORS.orange, color: COLORS.orange }}
+                >
+                  Quick Practice
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Original Scenario Practice Component (flat, single-step)
     function ScenarioPractice({ moduleId, onBack }) {
       const scenario = SCENARIOS[moduleId];
       const [selectedChoice, setSelectedChoice] = useState(null);
@@ -2400,6 +3786,9 @@
       const [quizStates, setQuizStates] = useProgress();
       const [showQuiz, setShowQuiz] = useState(null);
       const [showScenario, setShowScenario] = useState(null);
+      const [showScenarioHub, setShowScenarioHub] = useState(null);
+      const [showBranchingScenario, setShowBranchingScenario] = useState(null);
+      const [scenarioProgress, setScenarioProgress] = useScenarioProgress();
       const { conceptsByModule, scenariosByModule, loading: airtableLoading, error: airtableError } = useAirtableData();
 
       const handleStartQuiz = (moduleId) => {
@@ -2407,7 +3796,31 @@
       };
 
       const handleStartScenario = (moduleId) => {
+        // Show the scenario hub (which lets user choose branching or flat)
+        setShowScenarioHub(moduleId);
+      };
+
+      const handleStartBranching = (moduleId) => {
+        setShowScenarioHub(null);
+        setShowBranchingScenario(moduleId);
+      };
+
+      const handleStartFlat = (moduleId) => {
+        setShowScenarioHub(null);
         setShowScenario(moduleId);
+      };
+
+      const handleBranchingComplete = (moduleId, path) => {
+        const scenarioId = `bs${moduleId}`;
+        setScenarioProgress(prev => ({
+          ...prev,
+          [scenarioId]: {
+            completed: true,
+            attempts: ((prev[scenarioId] || {}).attempts || 0) + 1,
+            lastPlayed: Date.now(),
+            lastPath: path.map(p => p.quality)
+          }
+        }));
       };
 
       const handleCompleteQuiz = (moduleId) => {
@@ -2445,6 +3858,45 @@
         setExpandedModule(mid);
       };
 
+      const handleBackFromHub = () => {
+        const mid = showScenarioHub;
+        setShowScenarioHub(null);
+        setCurrentTab('learn');
+        setExpandedModule(mid);
+      };
+
+      const handleBackFromBranching = () => {
+        const mid = showBranchingScenario;
+        setShowBranchingScenario(null);
+        setCurrentTab('learn');
+        setExpandedModule(mid);
+      };
+
+      // Branching scenario view
+      if (showBranchingScenario) {
+        return (
+          <BranchingScenario
+            moduleId={showBranchingScenario}
+            onBack={handleBackFromBranching}
+            onComplete={(path) => handleBranchingComplete(showBranchingScenario, path)}
+          />
+        );
+      }
+
+      // Scenario hub view
+      if (showScenarioHub) {
+        return (
+          <ScenarioPracticeHub
+            moduleId={showScenarioHub}
+            onBack={handleBackFromHub}
+            onStartBranching={handleStartBranching}
+            onStartFlat={handleStartFlat}
+            scenarioProgress={scenarioProgress}
+          />
+        );
+      }
+
+      // Flat scenario view (existing)
       if (showScenario) {
         return (
           <ScenarioPractice
@@ -2688,13 +4140,15 @@
                             ? needsRefresh(module.id) ? '↻ Refresh Quiz' : 'Retake Quiz'
                             : 'Start Quiz'}
                         </button>
-                        {SCENARIOS[module.id] && (
+                        {(BRANCHING_SCENARIOS[module.id] || SCENARIOS[module.id]) && (
                           <button
                             onClick={() => handleStartScenario(module.id)}
                             className="flex-1 px-4 py-3 rounded-lg font-bold border-2 text-sm sm:text-base transition"
                             style={{ borderColor: COLORS.orange, color: COLORS.orange }}
                           >
-                            Practice Scenario
+                            {scenarioProgress[`bs${module.id}`] && scenarioProgress[`bs${module.id}`].completed
+                              ? '🔄 Practice Scenarios'
+                              : '▶ Practice Scenarios'}
                           </button>
                         )}
                       </div>
