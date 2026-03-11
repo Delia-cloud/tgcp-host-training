@@ -1,0 +1,26 @@
+{
+  "name": "Good Company Host Training",
+  "short_name": "TGCP Training",
+  "description": "Training companion app for The Good Company People volunteer hosts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F9F3ED",
+  "theme_color": "#FF9E18",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "health"],
+  "lang": "en-GB"
+}

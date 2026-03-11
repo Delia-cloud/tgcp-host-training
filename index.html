@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#FF9E18">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TGCP Training">
+  <meta name="description" content="Training companion app for The Good Company People volunteer hosts">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
   <title>The Good Company People — Host Training</title>
 
   <!-- React and ReactDOM from CDN -->
@@ -43,8 +50,148 @@
 <body>
   <div id="root"></div>
 
+  <!-- Service Worker Registration & Airtable Data Layer -->
+  <script>
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(function(reg) { console.log('SW registered:', reg.scope); })
+          .catch(function(err) { console.log('SW failed:', err); });
+      });
+    }
+
+    // Data layer: loads from static data.json (no secrets in client code)
+    // Form submissions go through /api/submit serverless function
+    window.AirtableAPI = {
+      _data: null,
+
+      async loadData() {
+        if (this._data) return this._data;
+        try {
+          var response = await fetch('/data.json');
+          if (!response.ok) throw new Error('Failed to load data');
+          this._data = await response.json();
+        } catch (err) {
+          console.warn('Could not load data.json:', err);
+          this._data = {};
+        }
+        return this._data;
+      },
+
+      async fetchTable(tableName) {
+        var data = await this.loadData();
+        return data[tableName] || [];
+      },
+
+      async createRecord(tableName, fields) {
+        var response = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table: tableName, fields: fields })
+        });
+        if (!response.ok) throw new Error('Submit error: ' + response.status);
+        return response.json();
+      }
+    };
+  </script>
+
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect, useCallback } = React;
+
+    // ============ AIRTABLE DATA HOOK ============
+    function useAirtableData() {
+      const [airtableModules, setAirtableModules] = useState(null);
+      const [airtableConcepts, setAirtableConcepts] = useState(null);
+      const [airtableScenarios, setAirtableScenarios] = useState(null);
+      const [airtableQuizzes, setAirtableQuizzes] = useState(null);
+      const [airtableTips, setAirtableTips] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+
+      useEffect(() => {
+        let cancelled = false;
+        async function loadData() {
+          try {
+            const [modules, concepts, scenarios, quizzes, tips] = await Promise.all([
+              AirtableAPI.fetchTable('modules', { sort: [{ field: 'Order', direction: 'asc' }] }),
+              AirtableAPI.fetchTable('keyConcepts', { sort: [{ field: 'Module ID', direction: 'asc' }, { field: 'Order', direction: 'asc' }] }),
+              AirtableAPI.fetchTable('conceptScenarios', { sort: [{ field: 'Module ID', direction: 'asc' }, { field: 'Order', direction: 'asc' }] }),
+              AirtableAPI.fetchTable('quizQuestions', { sort: [{ field: 'Module ID', direction: 'asc' }] }).catch(() => null),
+              AirtableAPI.fetchTable('practicalTips', { sort: [{ field: 'Module ID', direction: 'asc' }] }).catch(() => null)
+            ]);
+            if (cancelled) return;
+            setAirtableModules(modules);
+            setAirtableConcepts(concepts);
+            setAirtableScenarios(scenarios);
+            setAirtableQuizzes(quizzes);
+            setAirtableTips(tips);
+          } catch (err) {
+            if (!cancelled) setError(err.message);
+            console.warn('Airtable fetch failed, using local data:', err);
+          } finally {
+            if (!cancelled) setLoading(false);
+          }
+        }
+        loadData();
+        return () => { cancelled = true; };
+      }, []);
+
+      // Build enriched concepts grouped by module ID
+      const conceptsByModule = React.useMemo(() => {
+        if (!airtableConcepts) return null;
+        const map = {};
+        airtableConcepts.forEach(r => {
+          const f = r.fields;
+          const mid = f['Module ID'];
+          if (!map[mid]) map[mid] = [];
+          map[mid].push({
+            title: f['Title'] || '',
+            content: f['Content'] || '',
+            source: 'airtable'
+          });
+        });
+        return map;
+      }, [airtableConcepts]);
+
+      // Build scenarios grouped by module ID
+      const scenariosByModule = React.useMemo(() => {
+        if (!airtableScenarios) return null;
+        const map = {};
+        airtableScenarios.forEach(r => {
+          const f = r.fields;
+          const mid = f['Module ID'];
+          if (!map[mid]) map[mid] = [];
+          map[mid].push({
+            conceptTitle: f['Concept Title'] || '',
+            text: f['Scenario Text'] || '',
+            source: 'airtable'
+          });
+        });
+        return map;
+      }, [airtableScenarios]);
+
+      return { conceptsByModule, scenariosByModule, airtableModules, airtableQuizzes, airtableTips, loading, error };
+    }
+
+    // ============ PROGRESS PERSISTENCE ============
+    function useProgress() {
+      const STORAGE_KEY = 'tgcp_host_progress';
+      const [quizStates, setQuizStates] = useState(() => {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          return saved ? JSON.parse(saved) : {};
+        } catch { return {}; }
+      });
+
+      useEffect(() => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(quizStates));
+        } catch {}
+      }, [quizStates]);
+
+      return [quizStates, setQuizStates];
+    }
 
     // COLOUR CONSTANTS
     const COLORS = {
@@ -1628,40 +1775,18 @@
         setSubmitting(true);
         setError('');
 
-        // Airtable API submission
-        const AIRTABLE_PAT = window.TGCP_AIRTABLE_PAT || '';
-        const AIRTABLE_BASE = window.TGCP_AIRTABLE_BASE || '';
-        const AIRTABLE_TABLE = 'Host Submissions';
-
-        if (AIRTABLE_PAT && AIRTABLE_BASE) {
-          try {
-            const response = await fetch(
-              'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + encodeURIComponent(AIRTABLE_TABLE),
-              {
-                method: 'POST',
-                headers: {
-                  'Authorization': 'Bearer ' + AIRTABLE_PAT,
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  records: [{
-                    fields: {
-                      'Type': submissionType.charAt(0).toUpperCase() + submissionType.slice(1),
-                      'Host Name': hostName || 'Anonymous',
-                      'Module': moduleTag || 'General',
-                      'Content': content,
-                      'Status': 'New',
-                      'Submitted': new Date().toISOString().split('T')[0]
-                    }
-                  }]
-                })
-              }
-            );
-            if (!response.ok) throw new Error('Submission failed');
-          } catch (err) {
-            // If Airtable fails, still show success (data captured in form)
-            console.log('Airtable submission note:', err.message);
-          }
+        // Airtable API submission via centralized helper
+        try {
+          await AirtableAPI.createRecord('hostSubmissions', {
+            'Type': submissionType.charAt(0).toUpperCase() + submissionType.slice(1),
+            'Host Name': hostName || 'Anonymous',
+            'Module': moduleTag || 'General',
+            'Content': content,
+            'Status': 'New',
+            'Submitted': new Date().toISOString().split('T')[0]
+          });
+        } catch (err) {
+          console.log('Airtable submission note:', err.message);
         }
 
         setSubmitted(true);
@@ -1818,10 +1943,25 @@
         }));
       };
 
-      const handleSubmit = (e) => {
+      const [submitting, setSubmitting] = useState(false);
+
+      const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
+        try {
+          await AirtableAPI.createRecord('interestExpressions', {
+            'Name': formData.name,
+            'Email': formData.email,
+            'Phone': formData.phone,
+            'Message': formData.message,
+            'Date': new Date().toISOString().split('T')[0]
+          });
+        } catch (err) {
+          console.warn('Failed to save to Airtable:', err);
+        }
         setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+        setSubmitting(false);
+        setFormData({ name: '', email: '', phone: '', message: '' });
       };
 
       return (
@@ -2257,9 +2397,10 @@
     function HostTrainingApp() {
       const [currentTab, setCurrentTab] = useState('learn');
       const [expandedModule, setExpandedModule] = useState(null);
-      const [quizStates, setQuizStates] = useState({});
+      const [quizStates, setQuizStates] = useProgress();
       const [showQuiz, setShowQuiz] = useState(null);
       const [showScenario, setShowScenario] = useState(null);
+      const { conceptsByModule, scenariosByModule, loading: airtableLoading, error: airtableError } = useAirtableData();
 
       const handleStartQuiz = (moduleId) => {
         setShowQuiz(moduleId);
@@ -2442,8 +2583,19 @@
                       <div className="mb-4">
                         <p className="text-sm font-semibold text-gray-700 mb-2">Key topics:</p>
                         <p className="text-sm text-gray-600">
-                          {module.keyConcepts.map(c => c.title).join(' • ')}
+                          {(() => {
+                            const localTitles = module.keyConcepts.map(c => c.title);
+                            const remoteTitles = (conceptsByModule && conceptsByModule[module.id] || [])
+                              .map(c => c.title)
+                              .filter(t => !localTitles.map(l => l.toLowerCase()).includes(t.toLowerCase()));
+                            return [...localTitles, ...remoteTitles].join(' • ');
+                          })()}
                         </p>
+                        {conceptsByModule && conceptsByModule[module.id] && (
+                          <p className="text-xs mt-1" style={{ color: COLORS.orange }}>
+                            {(conceptsByModule[module.id] || []).length} concepts from training database
+                          </p>
+                        )}
                       </div>
 
                       {/* Expandable Content */}
@@ -2461,31 +2613,69 @@
                         )}
                       </button>
 
-                      {expandedModule === module.id && (
-                        <div className="mb-6 space-y-4 pb-4 border-t-2 border-gray-200 pt-4">
-                          {module.keyConcepts.map((concept, idx) => (
-                            <div key={idx}>
-                              <h4 className="font-bold text-gray-800">{concept.title}</h4>
-                              <p className="text-sm text-gray-600 mt-1">{concept.content}</p>
-                              {concept.scenarios && concept.scenarios.length > 0 && (
-                                <ul className="text-xs text-gray-500 mt-2 ml-4 space-y-1">
-                                  {concept.scenarios.map((scenario, s) => (
-                                    <li key={s}>• {scenario}</li>
-                                  ))}
-                                </ul>
-                              )}
+                      {expandedModule === module.id && (() => {
+                        // Merge hardcoded concepts with Airtable concepts
+                        const localConcepts = module.keyConcepts || [];
+                        const remoteConcepts = (conceptsByModule && conceptsByModule[module.id]) || [];
+                        const localTitles = new Set(localConcepts.map(c => c.title.toLowerCase()));
+                        const extraConcepts = remoteConcepts.filter(c => !localTitles.has(c.title.toLowerCase()));
+                        const remoteScenarios = (scenariosByModule && scenariosByModule[module.id]) || [];
+
+                        return (
+                          <div className="mb-6 space-y-4 pb-4 border-t-2 border-gray-200 pt-4">
+                            {localConcepts.map((concept, idx) => (
+                              <div key={idx}>
+                                <h4 className="font-bold text-gray-800">{concept.title}</h4>
+                                <p className="text-sm text-gray-600 mt-1">{concept.content}</p>
+                                {concept.scenarios && concept.scenarios.length > 0 && (
+                                  <ul className="text-xs text-gray-500 mt-2 ml-4 space-y-1">
+                                    {concept.scenarios.map((scenario, s) => (
+                                      <li key={s}>• {scenario}</li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                            ))}
+
+                            {extraConcepts.length > 0 && (
+                              <div className="pt-3 border-t border-dashed border-orange-300">
+                                <p className="text-xs font-semibold mb-3" style={{ color: COLORS.orange }}>
+                                  Additional concepts from training materials:
+                                </p>
+                                {extraConcepts.map((concept, idx) => (
+                                  <div key={'extra-' + idx} className="mb-3">
+                                    <h4 className="font-bold text-gray-800 text-sm">{concept.title}</h4>
+                                    <p className="text-xs text-gray-600 mt-1">{concept.content}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {remoteScenarios.length > 0 && (
+                              <div className="pt-3 border-t border-dashed border-blue-300">
+                                <p className="text-xs font-semibold text-blue-700 mb-3">
+                                  Practice scenarios:
+                                </p>
+                                {remoteScenarios.map((scenario, idx) => (
+                                  <div key={'scen-' + idx} className="mb-3 p-3 rounded-lg bg-blue-50">
+                                    <p className="text-xs font-semibold text-gray-700 mb-1">{scenario.conceptTitle}</p>
+                                    <p className="text-xs text-gray-600 whitespace-pre-line">{scenario.text}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            <div className="pt-3 border-t border-gray-200">
+                              <p className="text-xs font-semibold text-gray-700 mb-2">Takeaways:</p>
+                              <ul className="text-xs text-gray-600 space-y-1">
+                                {module.takeaways.map((t, idx) => (
+                                  <li key={idx}>✓ {t}</li>
+                                ))}
+                              </ul>
                             </div>
-                          ))}
-                          <div className="pt-3 border-t border-gray-200">
-                            <p className="text-xs font-semibold text-gray-700 mb-2">Takeaways:</p>
-                            <ul className="text-xs text-gray-600 space-y-1">
-                              {module.takeaways.map((t, idx) => (
-                                <li key={idx}>✓ {t}</li>
-                              ))}
-                            </ul>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
 
                       {/* Quiz & Scenario Buttons */}
                       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -3024,8 +3214,12 @@
 
           {/* Footer */}
           <footer className="bg-white border-t-2 mt-12" style={{ borderColor: COLORS.orange }}>
-            <div className="max-w-6xl mx-auto px-4 py-8 text-center text-gray-600 text-sm">
+            <div className="max-w-6xl mx-auto px-4 py-8 text-center text-gray-600 text-sm space-y-3">
               <p>The Good Company People — Host Training — Making the world a kinder place, one club at a time.</p>
+              <div className="flex items-center justify-center gap-2 text-xs">
+                <span className={`w-2 h-2 rounded-full ${airtableError ? 'bg-red-400' : airtableLoading ? 'bg-yellow-400' : 'bg-green-400'}`}></span>
+                <span>{airtableError ? 'Offline mode' : airtableLoading ? 'Loading training data...' : 'Connected to training database'}</span>
+              </div>
             </div>
           </footer>
         </div>
