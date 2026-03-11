@@ -4076,11 +4076,11 @@
                         return (
                           <div className="mb-6 space-y-4 pb-4 border-t-2 border-gray-200 pt-4">
                             {localConcepts.map((concept, idx) => (
-                              <div key={idx}>
-                                <h4 className="font-bold text-gray-800">{concept.title}</h4>
-                                <p className="text-sm text-gray-600 mt-1">{concept.content}</p>
+                              <div key={idx} className="p-3 sm:p-4 rounded-lg bg-gray-50 border border-gray-200">
+                                <h4 className="font-bold" style={{ color: COLORS.slate }}>{concept.title}</h4>
+                                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{concept.content}</p>
                                 {concept.scenarios && concept.scenarios.length > 0 && (
-                                  <ul className="text-xs text-gray-500 mt-2 ml-4 space-y-1">
+                                  <ul className="text-xs text-gray-500 mt-3 ml-4 space-y-1.5">
                                     {concept.scenarios.map((scenario, s) => (
                                       <li key={s}>• {scenario}</li>
                                     ))}
@@ -4094,12 +4094,14 @@
                                 <p className="text-xs font-semibold mb-3" style={{ color: COLORS.orange }}>
                                   Additional concepts from training materials:
                                 </p>
-                                {extraConcepts.map((concept, idx) => (
-                                  <div key={'extra-' + idx} className="mb-3">
-                                    <h4 className="font-bold text-gray-800 text-sm">{concept.title}</h4>
-                                    <p className="text-xs text-gray-600 mt-1">{concept.content}</p>
-                                  </div>
-                                ))}
+                                <div className="space-y-3">
+                                  {extraConcepts.map((concept, idx) => (
+                                    <div key={'extra-' + idx} className="p-3 sm:p-4 rounded-lg border-l-3" style={{ backgroundColor: COLORS.cream, borderLeftWidth: '3px', borderLeftColor: COLORS.orange }}>
+                                      <h4 className="font-bold text-sm" style={{ color: COLORS.slate }}>{concept.title}</h4>
+                                      <p className="text-sm text-gray-600 mt-2 leading-relaxed">{concept.content}</p>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             )}
 
